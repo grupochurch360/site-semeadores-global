@@ -1,20 +1,9 @@
 import React from 'react';
 import {
   LayoutDashboard,
-  BarChart3,
   MapPin,
   Flame,
-  Users2,
-  CalendarCheck2,
-  GraduationCap,
-  Award,
   FileSpreadsheet,
-  Briefcase,
-  Users,
-  Film,
-  Coins,
-  ShieldCheck,
-  History,
   X,
   Sparkles,
   LogOut,
@@ -29,7 +18,6 @@ interface SidebarProps {
   isOpen: boolean;
   onClose: () => void;
   onOpenAIModal: () => void;
-  onOpenAuditModal: () => void;
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({
@@ -38,16 +26,17 @@ export const Sidebar: React.FC<SidebarProps> = ({
   isOpen,
   onClose,
   onOpenAIModal,
-  onOpenAuditModal,
 }) => {
-  const { currentUser, isAdmin, canAccessConsolidation, switchUser, allUsers } = useAuth();
+  const { currentUser, isAdmin, logout } = useAuth();
 
-  const navSections = [
+  const navSections: Array<{
+    title: string;
+    items: Array<{ id: string; label: string; icon: React.ComponentType<{ className?: string }>; badge?: string }>;
+  }> = [
     {
       title: 'VISÃO GERAL',
       items: [
         { id: 'dashboard', label: 'Dashboard Global', icon: LayoutDashboard },
-        { id: 'indicators', label: 'Indicadores & Metas', icon: BarChart3 },
       ],
     },
     {
@@ -55,50 +44,18 @@ export const Sidebar: React.FC<SidebarProps> = ({
       items: [
         { id: 'regions', label: 'Regionais', icon: MapPin },
         { id: 'evangelisms', label: 'Evangelismos', icon: Flame },
-        ...(canAccessConsolidation
-          ? [{ id: 'consolidation', label: 'Consolidação (LGPD)', icon: Users2 }]
-          : []),
-        { id: 'crusades', label: 'Cruzadas & Eventos', icon: CalendarCheck2 },
-      ],
-    },
-    {
-      title: 'FORMAÇÃO',
-      items: [
-        { id: 'courses', label: 'Cursos & Ensino', icon: GraduationCap },
-        { id: 'certificates', label: 'Alunos & Certificados', icon: Award },
       ],
     },
     {
       title: 'GESTÃO',
       items: [
         { id: 'reports', label: 'Relatórios Bimestrais', icon: FileSpreadsheet, badge: 'Crucial' },
-        { id: 'departments', label: 'Departamentos & Tarefas', icon: Briefcase },
-        { id: 'meetings', label: 'Reuniões de Alinhamento', icon: Users },
-      ],
-    },
-    {
-      title: 'COMUNICAÇÃO',
-      items: [
-        { id: 'media', label: 'Mídia & Identidade Oficial', icon: Film },
-      ],
-    },
-    {
-      title: 'ADMINISTRAÇÃO',
-      items: [
-        { id: 'financial_legal', label: 'Financeiro & Jurídico', icon: Coins },
-        ...(isAdmin
-          ? [{ id: 'audit_logs', label: 'Logs de Auditoria', icon: History }]
-          : []),
       ],
     },
   ];
 
   const handleItemClick = (id: string) => {
-    if (id === 'audit_logs') {
-      onOpenAuditModal();
-    } else {
-      setCurrentTab(id);
-    }
+    setCurrentTab(id);
     if (window.innerWidth < 1024) {
       onClose();
     }
@@ -190,11 +147,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
           ))}
         </div>
 
-        {/* Authenticated User Switcher Footer */}
+        {/* Authenticated User Footer */}
         <div className="p-3 border-t border-stone-800 bg-stone-950/60">
           <div className="flex items-center justify-between mb-2">
             <span className="text-[10px] uppercase font-bold text-stone-400 tracking-wider">
-              Alternador de Perfil
+              Sessão Autenticada
             </span>
             <span className="text-[10px] font-medium text-red-300 bg-red-950/80 px-1.5 py-0.5 rounded border border-red-900/30">
               {currentUser?.role === 'global_admin'
@@ -205,23 +162,19 @@ export const Sidebar: React.FC<SidebarProps> = ({
             </span>
           </div>
 
-          <div className="flex items-center gap-2">
-            <select
-              value={currentUser?.id || ''}
-              onChange={(e) => switchUser(e.target.value)}
-              className="flex-1 bg-stone-800 text-stone-200 text-xs rounded-md border border-stone-700 py-1.5 px-2 focus:outline-hidden focus:ring-1 focus:ring-red-500"
+          <div className="flex items-center justify-between gap-2">
+            <div className="min-w-0">
+              <p className="text-xs font-semibold text-stone-100 truncate">{currentUser?.name}</p>
+              <p className="text-[10px] text-stone-400 truncate">{currentUser?.email}</p>
+            </div>
+            <button
+              onClick={() => logout()}
+              className="p-2 rounded-md bg-stone-800 hover:bg-red-900/60 text-stone-300 hover:text-white border border-stone-700 transition-colors cursor-pointer shrink-0"
+              title="Sair da conta"
+              aria-label="Sair da conta"
             >
-              {allUsers.map((u) => (
-                <option key={u.id} value={u.id}>
-                  {u.name} ({u.role.replace('_', ' ')})
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div className="mt-2 text-[11px] text-stone-400 flex items-center justify-between">
-            <span className="truncate">{currentUser?.name}</span>
-            <span className="text-[9px] text-stone-400 font-mono">16/10/2026</span>
+              <LogOut className="w-3.5 h-3.5" />
+            </button>
           </div>
         </div>
       </aside>

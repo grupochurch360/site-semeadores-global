@@ -7,22 +7,14 @@ import { GlobalDashboard } from './components/admin/GlobalDashboard.tsx';
 import { RegionsModule } from './components/admin/RegionsModule.tsx';
 import { EvangelismsModule } from './components/admin/EvangelismsModule.tsx';
 import { ReportsModule } from './components/admin/ReportsModule.tsx';
-import { ConsolidationModule } from './components/admin/ConsolidationModule.tsx';
-import { TeachingModule } from './components/admin/TeachingModule.tsx';
-import { CrusadesModule } from './components/admin/CrusadesModule.tsx';
-import { DepartmentsModule } from './components/admin/DepartmentsModule.tsx';
-import { MeetingsModule } from './components/admin/MeetingsModule.tsx';
-import { MediaModule } from './components/admin/MediaModule.tsx';
-import { LegalFinancialModule } from './components/admin/LegalFinancialModule.tsx';
+import { LoginView } from './components/auth/LoginView.tsx';
 import { AIAnalysisModal } from './components/admin/AIAnalysisModal.tsx';
-import { AuditModal } from './components/admin/AuditModal.tsx';
 
 function MainApp() {
   const [currentView, setCurrentView] = useState<'public' | 'admin'>('admin');
   const [currentTab, setCurrentTab] = useState<string>('dashboard');
   const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(false);
   const [isAIModalOpen, setIsAIModalOpen] = useState<boolean>(false);
-  const [isAuditModalOpen, setIsAuditModalOpen] = useState<boolean>(false);
 
   const { currentUser, isLoading } = useAuth();
 
@@ -45,14 +37,16 @@ function MainApp() {
     );
   }
 
+  if (!currentUser) {
+    return (
+      <LoginView onBackToPublic={() => setCurrentView('public')} />
+    );
+  }
+
   const tabTitles: Record<string, { title: string; subtitle: string }> = {
     dashboard: {
       title: 'Dashboard Global',
       subtitle: 'Indicadores consolidados e supervisão em tempo real',
-    },
-    indicators: {
-      title: 'Indicadores & Metas',
-      subtitle: 'Frequência de ações semanais e quinzenais por regional',
     },
     regions: {
       title: 'Regionais Semeadores de Fogo',
@@ -62,41 +56,9 @@ function MainApp() {
       title: 'Ações Evangelísticas',
       subtitle: 'Planejamento e registro pós-ação de mobilizações de rua',
     },
-    consolidation: {
-      title: 'Ministério de Consolidação',
-      subtitle: 'Acolhimento contínuo sob conformidade estrita com a LGPD',
-    },
-    crusades: {
-      title: 'Cruzadas & Grandes Eventos',
-      subtitle: 'Checklist operacional, intercâmbios e infraestrutura',
-    },
-    courses: {
-      title: 'Cursos & Ensino',
-      subtitle: 'Escola trimestral, aulas mensais via Zoom e 4 módulos',
-    },
-    certificates: {
-      title: 'Alunos & Certificados',
-      subtitle: 'Acompanhamento pedagógico e emissão de certificados digitais',
-    },
     reports: {
       title: 'Relatórios Bimestrais',
       subtitle: 'Prestação de contas obrigatória das regionais e homologação',
-    },
-    departments: {
-      title: 'Departamentos & Tarefas',
-      subtitle: '10 departamentos oficiais e painel Kanban de execução',
-    },
-    meetings: {
-      title: 'Reuniões de Alinhamento',
-      subtitle: 'Encontros bimestrais de liderança, pautas e encaminhamentos',
-    },
-    media: {
-      title: 'Mídia & Identidade Oficial',
-      subtitle: 'Gabaritos vetoriais, camisetas, bonés e panfletos padronizados',
-    },
-    financial_legal: {
-      title: 'Financeiro & Jurídico',
-      subtitle: 'Custos de cruzadas, diretrizes de viagens e registro INPI',
     },
   };
 
@@ -114,7 +76,6 @@ function MainApp() {
         isOpen={isSidebarOpen}
         onClose={() => setIsSidebarOpen(false)}
         onOpenAIModal={() => setIsAIModalOpen(true)}
-        onOpenAuditModal={() => setIsAuditModalOpen(true)}
       />
 
       {/* Main Content Area */}
@@ -136,36 +97,13 @@ function MainApp() {
             />
           )}
 
-          {currentTab === 'indicators' && (
-            <GlobalDashboard
-              onOpenAIModal={() => setIsAIModalOpen(true)}
-              onNavigateTab={(tab) => setCurrentTab(tab)}
-            />
-          )}
-
           {currentTab === 'regions' && <RegionsModule />}
 
           {currentTab === 'evangelisms' && <EvangelismsModule />}
 
-          {currentTab === 'consolidation' && <ConsolidationModule />}
-
-          {currentTab === 'crusades' && <CrusadesModule />}
-
-          {currentTab === 'courses' && <TeachingModule />}
-
-          {currentTab === 'certificates' && <TeachingModule />}
-
           {currentTab === 'reports' && (
             <ReportsModule onOpenAIAnalysis={() => setIsAIModalOpen(true)} />
           )}
-
-          {currentTab === 'departments' && <DepartmentsModule />}
-
-          {currentTab === 'meetings' && <MeetingsModule />}
-
-          {currentTab === 'media' && <MediaModule />}
-
-          {currentTab === 'financial_legal' && <LegalFinancialModule />}
         </main>
       </div>
 
@@ -173,12 +111,6 @@ function MainApp() {
       <AIAnalysisModal
         isOpen={isAIModalOpen}
         onClose={() => setIsAIModalOpen(false)}
-      />
-
-      {/* Audit Modal */}
-      <AuditModal
-        isOpen={isAuditModalOpen}
-        onClose={() => setIsAuditModalOpen(false)}
       />
     </div>
   );

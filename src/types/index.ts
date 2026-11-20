@@ -15,6 +15,22 @@ export interface User {
   departmentId?: string;
   avatar?: string;
   phone?: string;
+  active?: boolean;
+  passwordHash?: string; // Stored server-side only, never returned to client
+}
+
+export interface AIAnalysisRecord {
+  id: string;
+  targetPeriod: string;
+  regionId?: string;
+  provider: string;
+  analysis: string;
+  reportData?: unknown;
+  dataFingerprint?: string;
+  analyzedReportsCount: number;
+  createdBy: string;
+  createdByName: string;
+  createdAt: string;
 }
 
 export type RegionalStatus = 'active' | 'in_implantation' | 'paused';

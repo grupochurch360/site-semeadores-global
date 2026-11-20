@@ -6,25 +6,25 @@ import type {
 } from '../types/index.ts';
 
 class ApiService {
-  private currentUserId: string = 'usr-lucas';
+  private tokenKey = 'sfg_auth_token';
 
-  public setUserId(id: string) {
-    this.currentUserId = id;
-    localStorage.setItem('sfg_user_id', id);
+  public setToken(token: string | null) {
+    if (token) {
+      localStorage.setItem(this.tokenKey, token);
+    } else {
+      localStorage.removeItem(this.tokenKey);
+    }
   }
 
-  public getUserId(): string {
-    const saved = localStorage.getItem('sfg_user_id');
-    if (saved) {
-      this.currentUserId = saved;
-    }
-    return this.currentUserId;
+  public getToken(): string | null {
+    return localStorage.getItem(this.tokenKey);
   }
 
   private async request<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
+    const token = this.getToken();
     const headers: Record<string, string> = {
       'Content-Type': 'application/json',
-      'x-user-id': this.getUserId(),
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
       ...(options.headers as Record<string, string> || {}),
     };
 
@@ -34,6 +34,9 @@ class ApiService {
     });
 
     if (!res.ok) {
+      if (res.status === 401) {
+        this.setToken(null);
+      }
       const errData = await res.json().catch(() => ({}));
       throw new Error(errData.error || `Erro ${res.status}: Falha na requisição`);
     }
@@ -42,25 +45,51 @@ class ApiService {
   }
 
   // Auth
+  async login(email: string, password: string): Promise<{ success: boolean; token: string; user: User }> {
+    const res = await this.request<{ success: boolean; token: string; user: User }>('/api/auth/login', {
+      method: 'POST',
+      body: JSON.stringify({ email, password }),
+    });
+    this.setToken(res.token);
+    return res;
+  }
+
+  async logout(): Promise<void> {
+    try {
+      if (this.getToken()) {
+        await this.request('/api/auth/logout', { method: 'POST' });
+      }
+    } finally {
+      this.setToken(null);
+    }
+  }
+
   async getCurrentUser(): Promise<{ user: User }> {
     return this.request('/api/auth/me');
   }
 
-  async getAllUsers(): Promise<User[]> {
-    return this.request('/api/auth/users');
+  async getUsers(): Promise<User[]> {
+    return this.request('/api/users');
   }
 
-  async switchUser(userId: string): Promise<{ success: boolean; user: User }> {
-    this.setUserId(userId);
-    return this.request('/api/auth/switch', {
+  async createUser(data: Partial<User> & { password: string }): Promise<User> {
+    return this.request('/api/users', {
       method: 'POST',
-      body: JSON.stringify({ userId }),
+      body: JSON.stringify(data),
+    });
+  }
+
+  async updateUser(id: string, data: Partial<User> & { password?: string }): Promise<User> {
+    return this.request(`/api/users/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
     });
   }
 
   // Dashboard Stats
-  async getDashboardStats(): Promise<any> {
-    return this.request('/api/dashboard/stats');
+  async getDashboardStats(regionId?: string): Promise<any> {
+    const url = regionId ? `/api/dashboard/stats?regionId=${encodeURIComponent(regionId)}` : '/api/dashboard/stats';
+    return this.request(url);
   }
 
   // Regions
@@ -125,9 +154,14 @@ class ApiService {
   // AI Analysis
   async analyzeReports(targetPeriod?: string, regionId?: string): Promise<{
     success: boolean;
+    id: string;
     provider: string;
+    reportData: any;
+    html: string;
     analysis: string;
     analyzedReportsCount: number;
+    dataFingerprint: string;
+    fallbackAttempts?: Array<{ model: string; reason: string }>;
     timestamp: string;
   }> {
     return this.request('/api/ai/analyze-reports', {
@@ -186,6 +220,20 @@ class ApiService {
   // Departments & Tasks
   async getDepartments(): Promise<Department[]> {
     return this.request('/api/departments');
+  }
+
+  async createDepartment(data: Partial<Department>): Promise<Department> {
+    return this.request('/api/departments', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async updateDepartment(id: string, data: Partial<Department>): Promise<Department> {
+    return this.request(`/api/departments/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    });
   }
 
   async getTasks(): Promise<DepartmentTask[]> {

@@ -1,0 +1,105 @@
+{
+  "periodo": "5º Bimestre de 2026",
+  "meses": "Setembro / Outubro",
+  "ano": "2026",
+  "intervalo": "01/09/2026 a 31/10/2026",
+  "introducao": "Prezada Liderança Global dos Semeadores de Fogo Global, apresentamos o relatório de governança administrativa e análise diagnóstica consolidada do 5º Bimestre de 2026, com base nos relatórios submetidos pelas coordenações regionais de São Paulo e Minas Gerais.",
+  "leituraExecutiva": {
+    "titulo": "Dar continuidade ao que foi iniciado nas ruas",
+    "texto": "O conjunto analisado registra mobilização nas regionais e oportunidades de apoio em formação, identidade visual, infraestrutura e consolidação pós-ação. O próximo alinhamento deve transformar essas necessidades em encaminhamentos acompanháveis."
+  },
+  "leituraMetas": {
+    "titulo": "O foco é constância e acompanhamento",
+    "texto": "Alinhar as frequências semanal e quinzenal ao calendário das regionais e organizar o encaminhamento dos contatos autorizados à equipe de consolidação."
+  },
+  "regionais": [
+    {
+      "nome": "São Paulo",
+      "local": "Capital e Metrópole",
+      "coordenador": "Pr. Marcos Oliveira",
+      "acoes": 3,
+      "participacoes": 64,
+      "almas": 191,
+      "contatos": 68,
+      "frequencia": "Semanal",
+      "status": "Relatório submetido",
+      "diagnostico": "Abaixo do ritmo previsto",
+      "forte": "Engajamento e ousadia operacional",
+      "relato": "Comprometimento da equipe em áreas de grande circulação e vulnerabilidade: Praça da Sé, Avenida Paulista / MASP e Hospital das Clínicas.",
+      "atencao": "Frequência de ações inferior à prevista; necessidade dos quatro módulos físicos de estudo para uma nova turma de 30 alunos; demanda por caixas de som portáteis e impressos padronizados.",
+      "proximos": "Preparação para a Grande Cruzada Metropolitana de fim de ano e alinhamento da equipe de consolidação pós-ação."
+    },
+    {
+      "nome": "Minas Gerais",
+      "local": "Belo Horizonte",
+      "coordenador": "Pr. Samuel Couto",
+      "acoes": 2,
+      "participacoes": 32,
+      "almas": 89,
+      "contatos": 33,
+      "frequencia": "Quinzenal",
+      "status": "Relatório submetido",
+      "diagnostico": "Abaixo do ritmo previsto",
+      "forte": "Apoio pastoral e comunhão local",
+      "relato": "Suporte da igreja local e cooperação pastoral na atuação em locais estratégicos, como a Praça da Estação e o Campus UFMG Pampulha.",
+      "atencao": "Necessidade dos arquivos vetoriais da marca ou de camisetas oficiais; frequência de ações inferior à periodicidade quinzenal planejada.",
+      "proximos": "Implementação de formulário digital pelo celular e expansão das ações para Contagem e Betim."
+    }
+  ],
+  "gargalos": [
+    {
+      "titulo": "Identificação visual",
+      "regional": "Minas Gerais",
+      "texto": "Falta de camisetas oficiais para a identificação nas ruas. Solicitação dos arquivos vetoriais da marca para confecção local ou envio dos uniformes."
+    },
+    {
+      "titulo": "Infraestrutura e materiais",
+      "regional": "São Paulo",
+      "texto": "Necessidade de caixas de som portáteis e material impresso padronizado para apoiar as ações de evangelismo."
+    },
+    {
+      "titulo": "Logística de ensino",
+      "regional": "São Paulo",
+      "texto": "Envio urgente dos quatro módulos físicos de estudo para atender à nova turma de 30 alunos."
+    },
+    {
+      "titulo": "Consolidação pós-ação",
+      "regional": "Ambas as regionais",
+      "texto": "Aprimorar a triagem dos contatos e o alinhamento com a equipe responsável pelo acompanhamento após os evangelismos."
+    }
+  ],
+  "recomendacoes": [
+    {
+      "titulo": "Viabilizar os materiais de ensino",
+      "escopo": "São Paulo",
+      "prioridade": "Prioridade máxima",
+      "texto": "Deliberar sobre a autorização e o despacho dos quatro módulos físicos de estudo para a turma de 30 novos alunos."
+    },
+    {
+      "titulo": "Disponibilizar a identidade oficial",
+      "escopo": "Minas Gerais e demais regionais",
+      "texto": "Definir entre o envio dos arquivos vetoriais para confecção local e a remessa centralizada de camisetas oficiais."
+    },
+    {
+      "titulo": "Avaliar o suporte de infraestrutura",
+      "escopo": "São Paulo",
+      "texto": "Avaliar o orçamento para caixas de som portáteis e folhetos ou impressos padronizados."
+    },
+    {
+      "titulo": "Testar a triagem digital integrada",
+      "escopo": "São Paulo e Minas Gerais",
+      "texto": "Avaliar a proposta de formulário pelo celular apresentada por Minas Gerais e integrar o fluxo à equipe de consolidação pós-ação."
+    },
+    {
+      "titulo": "Realinhar o calendário de ações",
+      "escopo": "Coordenações regionais",
+      "texto": "Alinhar com Pr. Marcos Oliveira e Pr. Samuel Couto a programação das ações para atender às frequências semanal e quinzenal."
+    }
+  ],
+  "demais": {
+    "titulo": "Demais regionais globais",
+    "status": "Sem dados no conjunto analisado",
+    "texto": "Não foram fornecidos relatórios das demais regionais neste exemplo. A ausência de dados não permite concluir que não houve atividades.",
+    "recomendacao": "Solicitar os relatórios ainda não disponíveis para ampliar a consolidação do 5º Bimestre."
+  }
+}

@@ -4,7 +4,7 @@ import type {
   User, Region, Member, EvangelismEvent, BimonthlyReport,
   ConsolidationContact, Course, Enrollment, CrusadeEvent,
   Department, DepartmentTask, LeadershipMeeting, MediaAsset,
-  LegalFinancialRecord, AuditLog
+  LegalFinancialRecord, AuditLog, AIAnalysisRecord
 } from '../src/types/index.ts';
 
 export interface DatabaseSchema {
@@ -23,9 +23,11 @@ export interface DatabaseSchema {
   media_assets: MediaAsset[];
   legal_records: LegalFinancialRecord[];
   audit_logs: AuditLog[];
+  ai_analyses: AIAnalysisRecord[];
 }
 
-const DATA_DIR = path.resolve(process.cwd(), 'data');
+const SOURCE_DB_FILE = path.resolve(process.cwd(), 'data', 'database.json');
+const DATA_DIR = process.env.VERCEL ? path.resolve('/tmp', 'sfg-data') : path.resolve(process.cwd(), 'data');
 const DB_FILE = path.join(DATA_DIR, 'database.json');
 
 const INITIAL_DATA: DatabaseSchema = {
@@ -951,7 +953,8 @@ const INITIAL_DATA: DatabaseSchema = {
       targetId: 'root',
       details: 'Inicialização da arquitetura oficial Semeadores de Fogo Global após reunião estratégica de 16/10/2026.'
     }
-  ]
+  ],
+  ai_analyses: []
 };
 
 export class DatabaseManager {
@@ -969,10 +972,21 @@ export class DatabaseManager {
   }
 
   private loadDatabase(): DatabaseSchema {
-    if (fs.existsSync(DB_FILE)) {
+    const readFile = fs.existsSync(DB_FILE)
+      ? DB_FILE
+      : fs.existsSync(SOURCE_DB_FILE)
+      ? SOURCE_DB_FILE
+      : null;
+
+    if (readFile) {
       try {
-        const raw = fs.readFileSync(DB_FILE, 'utf-8');
-        return JSON.parse(raw);
+        const raw = fs.readFileSync(readFile, 'utf-8');
+        const parsed = JSON.parse(raw) as Partial<DatabaseSchema>;
+        return {
+          ...JSON.parse(JSON.stringify(INITIAL_DATA)),
+          ...parsed,
+          ai_analyses: Array.isArray(parsed.ai_analyses) ? parsed.ai_analyses : [],
+        };
       } catch (err) {
         console.error('Erro ao ler database.json, restaurando initial:', err);
       }
@@ -983,8 +997,12 @@ export class DatabaseManager {
 
   public saveDatabase(newData?: DatabaseSchema) {
     if (newData) this.data = newData;
-    this.ensureDirectory();
-    fs.writeFileSync(DB_FILE, JSON.stringify(this.data, null, 2), 'utf-8');
+    try {
+      this.ensureDirectory();
+      fs.writeFileSync(DB_FILE, JSON.stringify(this.data, null, 2), 'utf-8');
+    } catch (err) {
+      console.warn('[DB] Não foi possível gravar em disco (modo memória ativo):', err);
+    }
   }
 
   public get<K extends keyof DatabaseSchema>(key: K): DatabaseSchema[K] {

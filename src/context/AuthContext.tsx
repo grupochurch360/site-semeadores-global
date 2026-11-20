@@ -1,15 +1,15 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import type { User, RoleType } from '../types/index.ts';
+import type { User } from '../types/index.ts';
 import { api } from '../services/api.ts';
 
 interface AuthContextType {
   currentUser: User | null;
-  allUsers: User[];
   isLoading: boolean;
   activeRegionFilter: string;
   setActiveRegionFilter: (regionId: string) => void;
-  switchUser: (userId: string) => Promise<void>;
-  
+  login: (email: string, password: string) => Promise<void>;
+  logout: () => Promise<void>;
+
   // Role checks
   isAdmin: boolean;
   isCoordinator: boolean;
@@ -17,7 +17,7 @@ interface AuthContextType {
   isConsolidationTeam: boolean;
   isTeachingTeam: boolean;
   isMediaTeam: boolean;
-  
+
   // Permission helpers
   canManageRegions: boolean;
   canApproveReports: boolean;
@@ -30,21 +30,28 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
-  const [allUsers, setAllUsers] = useState<User[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [activeRegionFilter, setActiveRegionFilter] = useState<string>('all');
 
   useEffect(() => {
     async function loadAuth() {
+      const token = api.getToken();
+      if (!token) {
+        setIsLoading(false);
+        return;
+      }
+
       try {
-        const [meData, usersData] = await Promise.all([
-          api.getCurrentUser(),
-          api.getAllUsers(),
-        ]);
+        const meData = await api.getCurrentUser();
         setCurrentUser(meData.user);
-        setAllUsers(usersData);
-      } catch (err) {
-        console.error('Falha ao carregar usuário atual:', err);
+        if (meData.user.role !== 'global_admin' && meData.user.regionId) {
+          setActiveRegionFilter(meData.user.regionId);
+        } else {
+          setActiveRegionFilter('all');
+        }
+      } catch {
+        api.setToken(null);
+        setCurrentUser(null);
       } finally {
         setIsLoading(false);
       }
@@ -52,21 +59,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     loadAuth();
   }, []);
 
-  const switchUser = async (userId: string) => {
-    try {
-      setIsLoading(true);
-      const res = await api.switchUser(userId);
-      setCurrentUser(res.user);
-      if (res.user.role === 'regional_coordinator' && res.user.regionId) {
-        setActiveRegionFilter(res.user.regionId);
-      } else {
-        setActiveRegionFilter('all');
-      }
-    } catch (err) {
-      console.error('Erro ao alternar usuário:', err);
-    } finally {
-      setIsLoading(false);
+  const login = async (email: string, password: string) => {
+    const res = await api.login(email, password);
+    setCurrentUser(res.user);
+    if (res.user.role !== 'global_admin' && res.user.regionId) {
+      setActiveRegionFilter(res.user.regionId);
+    } else {
+      setActiveRegionFilter('all');
     }
+  };
+
+  const logout = async () => {
+    await api.logout();
+    setCurrentUser(null);
+    setActiveRegionFilter('all');
   };
 
   const isAdmin = currentUser?.role === 'global_admin';
@@ -78,7 +84,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const canManageRegions = isAdmin;
   const canApproveReports = isAdmin;
-  
+
   const canEditEvangelism = (regionId?: string) => {
     if (isAdmin) return true;
     if (!regionId) return false;
@@ -97,11 +103,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     <AuthContext.Provider
       value={{
         currentUser,
-        allUsers,
         isLoading,
         activeRegionFilter,
         setActiveRegionFilter,
-        switchUser,
+        login,
+        logout,
         isAdmin,
         isCoordinator,
         isEvangelismLeader,
