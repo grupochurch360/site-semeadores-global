@@ -165,25 +165,25 @@ export const EvangelismsModule: React.FC = () => {
       )}
 
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-5 border-b border-[#E7E2DA]">
+      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-5 border-b border-[#DCE5ED]">
         <div>
-          <span className="text-red-700 text-xs font-semibold tracking-wide">
+          <span className="section-kicker">
             Ações de Campo & Rua
           </span>
-          <h2 className="text-xl sm:text-2xl font-extrabold text-[#141210] tracking-tight mt-0.5">
+          <h2 className="text-xl sm:text-2xl font-extrabold text-[#0B2946] tracking-tight mt-1">
             Módulo de Evangelismos
           </h2>
-          <p className="text-xs text-stone-500 mt-1">
+          <p className="text-xs text-[#586E84] mt-1">
             Planejamento, mobilização e consolidação dos testemunhos e almas alcançadas.
           </p>
         </div>
 
         <div className="flex items-center gap-2.5">
-          <div className="flex bg-white p-1 rounded-xl border border-[#E7E2DA]">
+          <div className="flex bg-white p-1 rounded-xl border border-[#DCE5ED]">
             <button
               onClick={() => setViewMode('list')}
               className={`px-2.5 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 cursor-pointer ${
-                viewMode === 'list' ? 'bg-[#141210] text-white' : 'text-stone-600'
+                viewMode === 'list' ? 'bg-[#061A2D] text-white' : 'text-[#586E84]'
               }`}
             >
               <List className="w-3.5 h-3.5" />
@@ -192,7 +192,7 @@ export const EvangelismsModule: React.FC = () => {
             <button
               onClick={() => setViewMode('calendar')}
               className={`px-2.5 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 cursor-pointer ${
-                viewMode === 'calendar' ? 'bg-[#141210] text-white' : 'text-stone-600'
+                viewMode === 'calendar' ? 'bg-[#061A2D] text-white' : 'text-[#586E84]'
               }`}
             >
               <Calendar className="w-3.5 h-3.5" />
@@ -205,7 +205,7 @@ export const EvangelismsModule: React.FC = () => {
               setModalError(null);
               setIsPlanModalOpen(true);
             }}
-            className="flex items-center gap-1.5 px-4 py-2.5 bg-red-700 hover:bg-red-800 text-white rounded-xl text-xs font-semibold transition-colors cursor-pointer"
+            className="flex items-center gap-1.5 px-4 py-2.5 bg-[#ED801F] hover:bg-[#d86f12] text-white rounded-xl text-xs font-bold transition-colors cursor-pointer"
           >
             <Plus className="w-4 h-4" />
             <span>Agendar Evangelismo</span>

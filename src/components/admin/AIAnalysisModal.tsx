@@ -99,14 +99,14 @@ export const AIAnalysisModal: React.FC<AIAnalysisModalProps> = ({ isOpen, onClos
       <div className="bg-white rounded-2xl max-w-5xl w-full p-6 shadow-2xl max-h-[94vh] flex flex-col gap-4 overflow-hidden">
         <div className="flex items-center justify-between pb-3 border-b border-stone-200 shrink-0">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-red-800 text-white flex items-center justify-center">
-              <Sparkles className="w-4 h-4 text-amber-300 animate-pulse" />
+            <div className="w-8 h-8 rounded-lg bg-[#061A2D] text-[#FFBD58] flex items-center justify-center">
+              <Sparkles className="w-4 h-4 text-[#FFBD58]" />
             </div>
             <div>
-              <h3 className="font-bold text-base text-[#141210]">
+              <h3 className="font-bold text-base text-[#0B2946]">
                 Relatório Oficial Consolidado por IA
               </h3>
-              <p className="text-xs text-stone-500">
+              <p className="text-xs text-[#586E84]">
                 Modelo oficial Semeadores de Fogo — atualizado automaticamente com os dados mais recentes
               </p>
             </div>
@@ -149,16 +149,16 @@ export const AIAnalysisModal: React.FC<AIAnalysisModalProps> = ({ isOpen, onClos
           <button
             onClick={handleGenerate}
             disabled={loading}
-            className="w-full sm:w-auto px-5 py-2 bg-red-700 hover:bg-red-800 disabled:opacity-50 text-white rounded-lg text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 shadow-xs cursor-pointer"
+            className="w-full sm:w-auto px-5 py-2 bg-[#061A2D] hover:bg-[#0A3D69] disabled:opacity-50 text-white rounded-lg text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 shadow-xs cursor-pointer"
           >
             {loading ? (
               <>
-                <RefreshCw className="w-4 h-4 animate-spin" />
+                <RefreshCw className="w-4 h-4 animate-spin text-[#FFBD58]" />
                 <span>Gerando Relatório Atualizado...</span>
               </>
             ) : (
               <>
-                <Sparkles className="w-4 h-4 text-amber-200" />
+                <Sparkles className="w-4 h-4 text-[#FFBD58]" />
                 <span>{analysisResult ? 'Atualizar Relatório com Novos Dados' : 'Gerar Relatório Oficial'}</span>
               </>
             )}

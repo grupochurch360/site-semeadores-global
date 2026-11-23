@@ -1,5 +1,4 @@
 import React from 'react';
-import { Flame } from 'lucide-react';
 
 interface BrandLogoProps {
   className?: string;
@@ -17,10 +16,10 @@ export const BrandLogo: React.FC<BrandLogoProps> = ({
   const isLight = variant === 'light' || variant === 'white';
 
   const emblemSizes = {
-    sm: 'w-8 h-8',
-    md: 'w-9 h-9',
+    sm: 'w-9 h-9',
+    md: 'w-10 h-10',
     lg: 'w-12 h-12',
-    xl: 'w-14 h-14',
+    xl: 'w-16 h-16',
   };
 
   const titleSizes = {
@@ -32,32 +31,29 @@ export const BrandLogo: React.FC<BrandLogoProps> = ({
 
   return (
     <div className={`flex items-center gap-2.5 min-w-0 ${className}`}>
-      <div
-        className={`${emblemSizes[size]} rounded-xl flex items-center justify-center relative shrink-0 overflow-hidden ${
-          isLight
-            ? 'bg-red-700 text-white border border-red-500/40'
-            : 'bg-[#141210] text-white border border-stone-800'
-        }`}
-        title="Semeadores de Fogo Global"
-      >
-        <Flame className="w-4 h-4 text-amber-300 fill-amber-300" />
-      </div>
+      <img
+        src="/logo-semeadores-sm.png"
+        alt="Brasão Semeadores de Fogo Global"
+        width={40}
+        height={37}
+        className={`${emblemSizes[size]} object-contain shrink-0 select-none`}
+      />
 
       <div className="flex flex-col min-w-0 leading-tight">
         <span
           className={`font-extrabold tracking-tight whitespace-nowrap ${titleSizes[size]} ${
-            isLight ? 'text-white' : 'text-[#141210]'
+            isLight ? 'text-white' : 'text-[#061A2D]'
           }`}
         >
           Semeadores de Fogo
         </span>
         {showSubtitle && (
           <span
-            className={`text-[10px] tracking-[0.16em] font-semibold uppercase whitespace-nowrap ${
-              isLight ? 'text-red-300' : 'text-red-700'
+            className={`text-[10px] tracking-[0.16em] font-bold uppercase whitespace-nowrap ${
+              isLight ? 'text-[#FFBD58]' : 'text-[#ED801F]'
             }`}
           >
-            Plataforma Global
+            Governança Global
           </span>
         )}
       </div>

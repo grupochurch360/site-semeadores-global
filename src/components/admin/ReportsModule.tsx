@@ -369,15 +369,15 @@ export const ReportsModule: React.FC<ReportsModuleProps> = ({ onOpenAIAnalysis }
       )}
 
       {/* Top Header */}
-      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-5 border-b border-stone-200/80">
+      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-5 border-b border-[#DCE5ED]">
         <div>
-          <span className="text-red-700 text-xs font-semibold tracking-wide">
+          <span className="section-kicker">
             Prestação de Contas Ministerial
           </span>
-          <h2 className="text-xl sm:text-2xl font-extrabold text-[#141210] tracking-tight mt-0.5">
+          <h2 className="text-xl sm:text-2xl font-extrabold text-[#0B2946] tracking-tight mt-1">
             Relatórios Bimestrais das Regionais
           </h2>
-          <p className="text-xs text-stone-500 mt-1 max-w-2xl">
+          <p className="text-xs text-[#586E84] mt-1 max-w-2xl">
             Edite números diretamente no card com Edição Rápida ou abra o formulário completo para relatos e planejamento.
           </p>
         </div>
@@ -386,16 +386,16 @@ export const ReportsModule: React.FC<ReportsModuleProps> = ({ onOpenAIAnalysis }
           {isAdmin && (
             <button
               onClick={onOpenAIAnalysis}
-              className="flex items-center gap-1.5 px-4 py-2.5 bg-[#141210] hover:bg-stone-800 text-white rounded-xl text-xs font-semibold shadow-xs transition-colors cursor-pointer"
+              className="flex items-center gap-1.5 px-4 py-2.5 bg-[#061A2D] hover:bg-[#0A3D69] text-white rounded-xl text-xs font-bold shadow-xs transition-colors cursor-pointer"
             >
-              <Sparkles className="w-3.5 h-3.5 text-amber-300" />
+              <Sparkles className="w-3.5 h-3.5 text-[#FFBD58]" />
               <span>Analisar com IA</span>
             </button>
           )}
 
           <button
             onClick={handleOpenCreate}
-            className="flex items-center gap-1.5 px-4 py-2.5 bg-red-700 hover:bg-red-800 text-white rounded-xl text-xs font-semibold shadow-xs transition-colors cursor-pointer"
+            className="flex items-center gap-1.5 px-4 py-2.5 bg-[#ED801F] hover:bg-[#d86f12] text-white rounded-xl text-xs font-bold shadow-xs transition-colors cursor-pointer"
           >
             <Plus className="w-4 h-4" />
             <span>Novo Relatório</span>
@@ -405,26 +405,26 @@ export const ReportsModule: React.FC<ReportsModuleProps> = ({ onOpenAIAnalysis }
 
       {/* Summary Bar */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-        <div className="bg-white rounded-xl border border-stone-200/80 p-4">
-          <span className="text-[11px] font-medium text-stone-500 block">Relatórios filtrados</span>
-          <span className="text-2xl font-extrabold text-[#141210] tabular-nums mt-1 block">
+        <div className="bg-white rounded-xl border border-[#DCE5ED] p-4">
+          <span className="text-[11px] font-medium text-[#586E84] block">Relatórios filtrados</span>
+          <span className="text-2xl font-extrabold text-[#0B2946] tabular-nums mt-1 block">
             {filteredReports.length}
           </span>
         </div>
-        <div className="bg-white rounded-xl border border-stone-200/80 p-4">
-          <span className="text-[11px] font-medium text-stone-500 block">Almas alcançadas</span>
-          <span className="text-2xl font-extrabold text-red-700 tabular-nums mt-1 block">
+        <div className="bg-[#061A2D] rounded-xl border border-[#16324F] p-4">
+          <span className="text-[11px] font-medium text-[#B7C8D9] block">Almas alcançadas</span>
+          <span className="text-2xl font-extrabold text-[#FFBD58] tabular-nums mt-1 block">
             {totalSoulsAll.toLocaleString('pt-BR')}
           </span>
         </div>
-        <div className="bg-white rounded-xl border border-stone-200/80 p-4">
-          <span className="text-[11px] font-medium text-stone-500 block">Aguardando parecer</span>
-          <span className="text-2xl font-extrabold text-amber-700 tabular-nums mt-1 block">
+        <div className="bg-white rounded-xl border border-[#DCE5ED] p-4">
+          <span className="text-[11px] font-medium text-[#586E84] block">Aguardando parecer</span>
+          <span className="text-2xl font-extrabold text-[#ED801F] tabular-nums mt-1 block">
             {pendingReviewCount}
           </span>
         </div>
-        <div className="bg-white rounded-xl border border-stone-200/80 p-4">
-          <span className="text-[11px] font-medium text-stone-500 block">Aprovados</span>
+        <div className="bg-white rounded-xl border border-[#DCE5ED] p-4">
+          <span className="text-[11px] font-medium text-[#586E84] block">Aprovados</span>
           <span className="text-2xl font-extrabold text-emerald-700 tabular-nums mt-1 block">
             {approvedCount}
           </span>
@@ -622,25 +622,25 @@ export const ReportsModule: React.FC<ReportsModuleProps> = ({ onOpenAIAnalysis }
                           Participantes: <strong className="text-stone-900">{rep.totalParticipantsSum}</strong>
                         </span>
                         <span className="tabular-nums">
-                          Almas: <strong className="text-red-700">{rep.totalSoulsReached}</strong>
+                          Almas: <strong className="text-[#ED801F]">{rep.totalSoulsReached}</strong>
                         </span>
                         <span className="tabular-nums">
                           Contatos LGPD: <strong className="text-emerald-700">{rep.authorizedContactsCount}</strong>
                         </span>
                         <span>
-                          Coord.: <strong className="text-stone-700">{rep.coordinatorName}</strong>
+                          Coord.: <strong className="text-[#0B2946]">{rep.coordinatorName}</strong>
                         </span>
                       </div>
                     )}
 
                     {rep.reviews && rep.reviews.length > 0 && (
-                      <div className="mt-2 text-xs bg-[#FAF8F5] border border-stone-200/80 p-2.5 rounded-xl flex items-start gap-2">
-                        <MessageSquare className="w-4 h-4 text-red-700 shrink-0 mt-0.5" />
+                      <div className="mt-2 text-xs bg-[#EDF4F9]/70 border border-[#DCE5ED] p-2.5 rounded-xl flex items-start gap-2">
+                        <MessageSquare className="w-4 h-4 text-[#0A3D69] shrink-0 mt-0.5" />
                         <div>
-                          <span className="font-bold text-stone-800">
+                          <span className="font-bold text-[#0B2946]">
                             {rep.reviews[rep.reviews.length - 1].authorName}:{' '}
                           </span>
-                          <span className="text-stone-600 italic">
+                          <span className="text-[#586E84] italic">
                             "{rep.reviews[rep.reviews.length - 1].comment}"
                           </span>
                         </div>
@@ -649,12 +649,12 @@ export const ReportsModule: React.FC<ReportsModuleProps> = ({ onOpenAIAnalysis }
                   </div>
 
                   {/* Action Buttons */}
-                  <div className="flex flex-wrap md:flex-col items-end gap-2 shrink-0 pt-3 md:pt-0 border-t md:border-t-0 border-stone-100">
+                  <div className="flex flex-wrap md:flex-col items-end gap-2 shrink-0 pt-3 md:pt-0 border-t md:border-t-0 border-[#DCE5ED]">
                     <div className="flex items-center gap-2">
                       {!isQuickEditing && (
                         <button
                           onClick={() => startQuickEdit(rep)}
-                          className="px-3 py-1.5 bg-[#FAF8F5] hover:bg-stone-200/70 text-stone-800 border border-stone-200 rounded-lg text-xs font-semibold flex items-center gap-1.5 cursor-pointer"
+                          className="px-3 py-1.5 bg-[#FFF9F2] hover:bg-[#f5ebd9] text-[#A6540B] border border-[#F5DDC3] rounded-lg text-xs font-semibold flex items-center gap-1.5 cursor-pointer"
                           title="Editar números e status diretamente"
                         >
                           <Pencil className="w-3 h-3" />
@@ -664,7 +664,7 @@ export const ReportsModule: React.FC<ReportsModuleProps> = ({ onOpenAIAnalysis }
 
                       <button
                         onClick={() => handleOpenViewOrEdit(rep)}
-                        className="px-3 py-1.5 bg-stone-100 hover:bg-stone-200 text-stone-800 rounded-lg text-xs font-semibold cursor-pointer"
+                        className="px-3 py-1.5 bg-[#EDF4F9] hover:bg-[#DCE5ED] text-[#0B2946] rounded-lg text-xs font-semibold cursor-pointer"
                       >
                         Editar Completo
                       </button>
@@ -676,7 +676,7 @@ export const ReportsModule: React.FC<ReportsModuleProps> = ({ onOpenAIAnalysis }
                             setReviewDecision('approved');
                             setIsReviewModalOpen(true);
                           }}
-                          className="px-3 py-1.5 bg-red-700 hover:bg-red-800 text-white rounded-lg text-xs font-semibold cursor-pointer"
+                          className="px-3 py-1.5 bg-[#061A2D] hover:bg-[#0A3D69] text-white rounded-lg text-xs font-semibold cursor-pointer"
                         >
                           Avaliar
                         </button>

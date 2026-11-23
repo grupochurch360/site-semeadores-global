@@ -41,14 +41,14 @@ export const LoginView: React.FC<LoginViewProps> = ({ onBackToPublic }) => {
   };
 
   return (
-    <div className="min-h-screen bg-[#FAF8F5] flex flex-col items-center justify-center p-4 sm:p-6">
-      <div className="w-full max-w-md bg-white rounded-2xl shadow-lg border border-[#E7E2DA] overflow-hidden">
-        <div className="bg-[#141210] px-6 py-7 text-white flex flex-col items-center text-center border-b border-stone-800">
-          <BrandLogo variant="white" size="sm" />
-          <h1 className="text-lg font-extrabold tracking-tight mt-4">
+    <div className="min-h-screen bg-[#EDF4F9] flex flex-col items-center justify-center p-4 sm:p-6">
+      <div className="w-full max-w-md bg-white rounded-2xl shadow-xl border border-[#DCE5ED] overflow-hidden">
+        <div className="bg-[#061A2D] px-6 py-7 text-white flex flex-col items-center text-center border-b-3 border-[#ED801F]">
+          <BrandLogo variant="white" size="md" />
+          <h1 className="text-lg font-extrabold tracking-tight mt-4 text-white">
             Portal da Liderança
           </h1>
-          <p className="text-xs text-stone-400 mt-1">
+          <p className="text-xs text-[#B7C8D9] mt-1">
             Acesso protegido por autenticação e isolamento regional (LGPD)
           </p>
         </div>
@@ -65,11 +65,11 @@ export const LoginView: React.FC<LoginViewProps> = ({ onBackToPublic }) => {
           )}
 
           <div>
-            <label htmlFor="login-email" className="block text-xs font-semibold text-stone-700 mb-1.5">
+            <label htmlFor="login-email" className="block text-xs font-bold text-[#0B2946] mb-1.5">
               E-mail Ministerial
             </label>
             <div className="relative">
-              <Mail className="w-4 h-4 text-stone-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+              <Mail className="w-4 h-4 text-[#586E84] absolute left-3.5 top-1/2 -translate-y-1/2" />
               <input
                 id="login-email"
                 type="email"
@@ -77,17 +77,17 @@ export const LoginView: React.FC<LoginViewProps> = ({ onBackToPublic }) => {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="nome@semeadoresdefogo.org"
-                className="w-full pl-10 pr-3 py-2.5 text-sm border border-[#E7E2DA] rounded-xl bg-white focus:outline-hidden focus:ring-2 focus:ring-red-600/30 focus:border-red-700"
+                className="w-full pl-10 pr-3 py-2.5 text-sm border border-[#DCE5ED] rounded-xl bg-white text-[#0B2946] focus:outline-hidden focus:ring-2 focus:ring-[#ED801F]/30 focus:border-[#0A3D69]"
               />
             </div>
           </div>
 
           <div>
-            <label htmlFor="login-password" className="block text-xs font-semibold text-stone-700 mb-1.5">
+            <label htmlFor="login-password" className="block text-xs font-bold text-[#0B2946] mb-1.5">
               Senha
             </label>
             <div className="relative">
-              <Lock className="w-4 h-4 text-stone-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+              <Lock className="w-4 h-4 text-[#586E84] absolute left-3.5 top-1/2 -translate-y-1/2" />
               <input
                 id="login-password"
                 type="password"
@@ -95,7 +95,7 @@ export const LoginView: React.FC<LoginViewProps> = ({ onBackToPublic }) => {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
-                className="w-full pl-10 pr-3 py-2.5 text-sm border border-[#E7E2DA] rounded-xl bg-white focus:outline-hidden focus:ring-2 focus:ring-red-600/30 focus:border-red-700"
+                className="w-full pl-10 pr-3 py-2.5 text-sm border border-[#DCE5ED] rounded-xl bg-white text-[#0B2946] focus:outline-hidden focus:ring-2 focus:ring-[#ED801F]/30 focus:border-[#0A3D69]"
               />
             </div>
           </div>
@@ -103,14 +103,14 @@ export const LoginView: React.FC<LoginViewProps> = ({ onBackToPublic }) => {
           <button
             type="submit"
             disabled={submitting}
-            className="w-full py-2.5 px-4 bg-red-700 hover:bg-red-800 disabled:opacity-60 text-white rounded-xl text-xs font-semibold transition-colors flex items-center justify-center gap-2 cursor-pointer"
+            className="w-full py-2.5 px-4 bg-[#061A2D] hover:bg-[#0A3D69] disabled:opacity-60 text-white rounded-xl text-xs font-bold transition-colors flex items-center justify-center gap-2 cursor-pointer"
           >
-            <ShieldCheck className="w-4 h-4" />
+            <ShieldCheck className="w-4 h-4 text-[#FFBD58]" />
             <span>{submitting ? 'Verificando...' : 'Entrar no Portal'}</span>
           </button>
 
-          <div className="pt-3 border-t border-[#E7E2DA]">
-            <p className="text-[11px] font-semibold text-stone-500 mb-2">
+          <div className="pt-3 border-t border-[#DCE5ED]">
+            <p className="text-[11px] font-bold text-[#586E84] mb-2">
               Contas de Teste (Ambiente Local):
             </p>
             <div className="grid grid-cols-1 gap-1.5">
@@ -119,10 +119,10 @@ export const LoginView: React.FC<LoginViewProps> = ({ onBackToPublic }) => {
                   key={acc.email}
                   type="button"
                   onClick={() => fillDemo(acc.email)}
-                  className="text-left px-3 py-2 rounded-xl bg-[#FAF8F5] hover:bg-stone-100 border border-[#E7E2DA] text-[11px] text-stone-700 flex items-center justify-between cursor-pointer transition-colors"
+                  className="text-left px-3 py-2 rounded-xl bg-[#EDF4F9] hover:bg-[#e1ecf4] border border-[#DCE5ED] text-[11px] text-[#0B2946] flex items-center justify-between cursor-pointer transition-colors"
                 >
                   <span className="font-semibold">{acc.label}</span>
-                  <span className="text-stone-400 text-[10px]">Preencher</span>
+                  <span className="text-[#0A3D69] font-semibold text-[10px]">Preencher</span>
                 </button>
               ))}
             </div>
@@ -131,7 +131,7 @@ export const LoginView: React.FC<LoginViewProps> = ({ onBackToPublic }) => {
           <button
             type="button"
             onClick={onBackToPublic}
-            className="w-full pt-2 text-xs font-medium text-stone-600 hover:text-[#141210] flex items-center justify-center gap-1.5 cursor-pointer"
+            className="w-full pt-2 text-xs font-semibold text-[#586E84] hover:text-[#061A2D] flex items-center justify-center gap-1.5 cursor-pointer"
           >
             <ArrowLeft className="w-3.5 h-3.5" />
             <span>Voltar ao Site Público</span>

@@ -1,38 +1,42 @@
 # DESIGN.md — Sistema Visual Semeadores de Fogo Global
 
-## 1. Diagnóstico do Estado Anterior
-A inspeção do site publicado/local revelou:
-- **Site público** com fundo escuro pontilhado genérico, excesso de caixa alta (`uppercase`) e palavra única destacada em vermelho no título, além de quebra apertada do logotipo e botão de acesso no cabeçalho mobile (`390px`).
-- **Área interna** funcional, porém com inconsistências entre módulos (`RegionsModule` e `EvangelismsModule` ainda usando `alert()` nativo, cabeçalho de calendário fixo em "Outubro de 2026" e indicador de implantação estático no Dashboard).
-- **Falta de coesão** entre o site público, o portal administrativo e o documento oficial A4 em papel claro editorial.
+## 1. Ideia Visual Central (Fundamentada nos Ativos Oficiais)
+> **"A arquitetura visual nasce diretamente do brasão oficial (escudo azul-marinho e dourado com a pomba-chama âmbar) e da folha de estilo do relatório oficial A4 (`templates/relatorio-ia/modelo-relatorio-semeadores.html`), unindo presença editorial de movimento no site público com clareza documental nas ferramentas internas de uso semanal."**
 
-## 2. Direção Visual Adotada: Editorial Ministerial & Consola Operacional
-Unificar toda a experiência em torno da mesma linguagem editorial do documento oficial da plataforma: **superfície clara em alabastro quente (`#FAF8F5`)**, **tinta carvão profunda (`#141210`)** e **acento carmesim ministerial (`#B91C1C`)**, combinando leitura acolhedora e clara no site público com alta legibilidade, densidade equilibrada e previsibilidade nas ferramentas internas.
+Durante a inspeção do repositório, verificou-se que o protótipo anterior havia deduzido uma paleta vermelha/preta apenas pelo nome "Semeadores de Fogo" e usava um ícone genérico no lugar do logotipo. Já o pacote oficial em `templates/relatorio-ia/modelo-relatorio-semeadores.html` contém o **brasão oficial incorporado em alta resolução** e os tokens cromáticos oficiais da organização (`--navy`, `--ink`, `--blue`, `--orange`, `--gold`, `--paper`, `--line`, `--muted`, `--wash`, `--warm`).
 
-### Paleta de Cores e Funções
-| Token | Hex | Função |
+## 2. Três Decisões Adaptadas da Referência (Dunamis Movement) com Expressão Própria
+1. **Abertura de presença memorável + navegação em cápsula de alto contraste:**
+   - *No Dunamis:* barra flutuante de alto contraste, tipografia monumental na primeira dobra e faixa de assinatura contínua na base do hero.
+   - *No Semeadores:* cabeçalho estruturado em azul-marinho profundo (`#061A2D`) com CTA em ouro (`#FFBD58`), primeira dobra em `#061A2D` ancorada pelo **Brasão Oficial do Escudo e Pomba-Chama** (`/logo-semeadores.png`, otimizado de 1,39 MB para 253 KB sem perda visual) e faixa institucional `ESTRUTURA · UNIDADE · MISSÃO`.
+2. **Mudança de ritmo na rolagem (Manifesto → Iniciativas → Ação):**
+   - *No Dunamis:* passagem nítida entre a afirmação de visão e a organização das frentes (Schools, Connect, Events).
+   - *No Semeadores:* transição do hero escuro (`#061A2D`) para o papel editorial claro (`#FBFCFD` e `#EDF4F9`), usando o marcador oficial de seção (filete horizontal `#ED801F` + kicker em caixa alta espaçada) para guiar a leitura pelas 4 frentes reais: **Fundamentos de Campo**, **5 Regionais Ativas**, **Escola de Formação (4 Módulos + Zoom)** e **Grande Cruzada 2026**.
+3. **Caminhos claros de próximo passo:**
+   - *No Dunamis:* botões diretos para entrar na comunidade ou acessar uma escola específica.
+   - *No Semeadores:* ações com destino real para cada público — entrada direta no **Portal da Liderança** (no topo, no hero e na seção de ensino), consulta rápida das **Regionais e Frequências** e canais clicáveis de **Contato Institucional** (`mailto:` e `tel:`).
+
+## 3. Paleta Oficial e Tokens (`src/index.css`)
+
+| Token CSS | Hex | Origem & Função no Sistema |
 | :--- | :--- | :--- |
-| `--bg-canvas` | `#FAF8F5` | Fundo principal da aplicação e seções alternadas do site público |
-| `--bg-surface` | `#FFFFFF` | Cartões, tabelas, formulários, modais e barra superior |
-| `--ink-primary` | `#141210` | Textos principais, títulos, barra lateral e blocos de destaque |
-| `--ink-muted` | `#57534E` | Textos secundários, descrições e metadados |
-| `--border-hairline` | `#E7E2DA` | Divisórias e contornos leves substituindo sombras pesadas |
-| `--accent-crimson` | `#B91C1C` | Ações primárias, links ativos, indicadores de almas alcançadas |
-| `--accent-ember` | `#B45309` | Alertas de revisão pendente e módulo de inteligência por IA |
-| `--status-success` | `#047857` | Aprovações, ações concluídas e consentimento LGPD |
+| `--navy` | `#061A2D` | Azul-marinho profundo do escudo oficial — Hero público, Sidebar interna, cabeçalhos de tabela e blocos de alcance |
+| `--ink` | `#0B2946` | Tinta editorial principal — títulos e textos de alta leitura sobre fundo claro |
+| `--blue` | `#0A3D69` | Azul real do escudo — bordas de painéis analíticos, badges institucionais e links |
+| `--orange` | `#ED801F` | Laranja-brasa da pomba-chama — kickers de seção, indicadores de ação, barras de progresso e foco de teclado |
+| `--gold` | `#FFBD58` | Ouro quente da moldura do escudo — CTAs de destaque sobre `--navy` e números de alcance principal |
+| `--paper` | `#FBFCFD` | Papel editorial claro — superfície principal das áreas internas e seções de leitura |
+| `--wash` | `#EDF4F9` | Lavagem azul-gelo — painéis de apoio, filtros e cabeçalhos secundários |
+| `--warm` | `#FFF9F2` | Lavagem âmbar suave (borda `#F5DDC3`) — alertas de revisão, pré-preenchimento e edição rápida |
+| `--line` | `#DCE5ED` | Fio estrutural — divisórias de tabelas, contornos de cards e inputs |
+| `--muted` | `#586E84` | Texto secundário, legendas e metadados |
 
-### Tipografia e Hierarquia
-- **Família única:** `Montserrat` (pesos `400`, `500`, `600`, `700`, `800`), consistente com o template oficial de impressão A4.
-- **Títulos em sentence case** com tracking firme (`tracking-tight`), reservando caixa alta discreta apenas para micro-etiquetas de status (`10px–11px`).
-- **Números tabulares (`tabular-nums`)** em todos os KPIs, tabelas, contagens e métricas de edição rápida.
-- **Comprimento de linha** limitado a `max-w-2xl` / `max-w-3xl` em textos corridos para leitura confortável.
-
-### Espaçamento, Grids e Responsividade
-- Container principal `max-w-7xl` com respiro `px-4 sm:px-6 lg:px-8`.
-- Breakpoints testados em **390px (celular)**, **768px (tablet)** e **1440px (desktop)**.
-- Cabeçalho público mobile compacto (`whitespace-nowrap` no botão principal e ocultação segura de subtítulo em telas estreitas) para eliminar quebras em múltiplas linhas e rolagem horizontal.
-
-### Componentes, Interação e Acessibilidade
-- **Bordas e raios:** `rounded-xl` (`12px`) para controles/inputs e `rounded-2xl` (`16px`) para cartões, painéis e modais, com bordas `border-[#E7E2DA]`.
-- **Feedback sem `alert()` nativo:** banners inline de erro em modais e notificações toast no canto inferior direito para confirmações.
-- **Acessibilidade:** `:focus-visible` com contorno carmesim de alto contraste e suporte completo a `@media (prefers-reduced-motion: reduce)`.
+## 4. Tipografia, Escala e Componentes
+- **Fonte oficial:** `Montserrat` (`400` a `900`), compartilhada com o relatório A4.
+- **Hierarquia:**
+  - Hero Display: `clamp(2.25rem, 4.5vw, 3.75rem)`, `font-extrabold`, `tracking-tight`, `line-height: 1.08`.
+  - Section Kicker (assinatura visual do relatório oficial): filete de `14px × 2px` em `#ED801F` seguido de rótulo `11px` em `#ED801F` (`font-bold`, `tracking-widest`).
+  - Indicadores e Tabelas: `tabular-nums` obrigatório em contagens de ações, participantes, almas e contatos LGPD.
+- **Acessibilidade e Performance:**
+  - Imagens do brasão com `width` e `height` explícitos para zero deslocamento de layout (CLS = 0), versão compacta `/logo-semeadores-sm.png` (23 KB) na navegação e `/logo-semeadores.png` (253 KB) no hero.
+  - Foco visível (`:focus-visible`) em `#ED801F` e respeito integral a `prefers-reduced-motion: reduce`.

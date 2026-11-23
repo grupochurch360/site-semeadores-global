@@ -20,10 +20,10 @@ function MainApp() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-stone-900 flex items-center justify-center text-white">
+      <div className="min-h-screen bg-[#061A2D] flex items-center justify-center text-white">
         <div className="flex flex-col items-center gap-3">
-          <div className="w-10 h-10 border-4 border-red-600 border-t-transparent rounded-full animate-spin" />
-          <span className="text-sm font-bold tracking-wider uppercase text-stone-300">
+          <div className="w-10 h-10 border-4 border-[#FFBD58] border-t-transparent rounded-full animate-spin" />
+          <span className="text-sm font-bold tracking-wider uppercase text-[#DAE4ED]">
             Semeadores de Fogo Global
           </span>
         </div>
@@ -68,7 +68,7 @@ function MainApp() {
   };
 
   return (
-    <div className="min-h-screen bg-[#FAF8F5] flex">
+    <div className="min-h-screen bg-[#FBFCFD] flex">
       {/* Sidebar */}
       <Sidebar
         currentTab={currentTab}

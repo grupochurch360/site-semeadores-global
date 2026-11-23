@@ -134,15 +134,15 @@ export const RegionsModule: React.FC = () => {
       )}
 
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-5 border-b border-[#E7E2DA]">
+      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-5 border-b border-[#DCE5ED]">
         <div>
-          <span className="text-red-700 text-xs font-semibold tracking-wide">
+          <span className="section-kicker">
             Estrutura Territorial
           </span>
-          <h2 className="text-xl sm:text-2xl font-extrabold text-[#141210] tracking-tight mt-0.5">
+          <h2 className="text-xl sm:text-2xl font-extrabold text-[#0B2946] tracking-tight mt-1">
             Gestão das Regionais
           </h2>
-          <p className="text-xs text-stone-500 mt-1">
+          <p className="text-xs text-[#586E84] mt-1">
             Cadastro, frequência evangelística oficial e supervisão de cada polo ministerial.
           </p>
         </div>
@@ -150,9 +150,9 @@ export const RegionsModule: React.FC = () => {
         {canManageRegions && (
           <button
             onClick={handleOpenCreate}
-            className="flex items-center gap-2 px-4 py-2.5 bg-red-700 hover:bg-red-800 text-white rounded-xl text-xs font-semibold transition-colors cursor-pointer shrink-0"
+            className="flex items-center gap-2 px-4 py-2.5 bg-[#061A2D] hover:bg-[#0A3D69] text-white rounded-xl text-xs font-bold transition-colors cursor-pointer shrink-0"
           >
-            <Plus className="w-4 h-4" />
+            <Plus className="w-4 h-4 text-[#FFBD58]" />
             <span>Cadastrar Nova Regional</span>
           </button>
         )}
