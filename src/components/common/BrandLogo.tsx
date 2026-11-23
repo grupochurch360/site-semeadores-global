@@ -17,46 +17,44 @@ export const BrandLogo: React.FC<BrandLogoProps> = ({
   const isLight = variant === 'light' || variant === 'white';
 
   const emblemSizes = {
-    sm: 'w-7 h-7 text-xs',
-    md: 'w-9 h-9 text-sm',
-    lg: 'w-12 h-12 text-base',
-    xl: 'w-16 h-16 text-xl',
+    sm: 'w-8 h-8',
+    md: 'w-9 h-9',
+    lg: 'w-12 h-12',
+    xl: 'w-14 h-14',
   };
 
   const titleSizes = {
     sm: 'text-xs',
-    md: 'text-sm font-bold',
-    lg: 'text-lg font-bold',
-    xl: 'text-2xl font-black tracking-tight',
+    md: 'text-sm',
+    lg: 'text-lg',
+    xl: 'text-xl',
   };
 
   return (
-    <div className={`flex items-center gap-3 ${className}`}>
-      {/* Official Símbolo / Pomba & Fogo Reserved Container */}
+    <div className={`flex items-center gap-2.5 min-w-0 ${className}`}>
       <div
-        className={`${emblemSizes[size]} rounded-lg flex items-center justify-center font-bold tracking-wider relative transition-transform shadow-xs overflow-hidden ${
+        className={`${emblemSizes[size]} rounded-xl flex items-center justify-center relative shrink-0 overflow-hidden ${
           isLight
-            ? 'bg-red-600 text-white border border-red-500/40'
-            : 'bg-red-800 text-white border border-red-900/20'
+            ? 'bg-red-700 text-white border border-red-500/40'
+            : 'bg-[#141210] text-white border border-stone-800'
         }`}
-        title="Espaço reservado para o Símbolo Oficial (Pomba / Fogo)"
+        title="Semeadores de Fogo Global"
       >
-        <div className="absolute inset-0 bg-gradient-to-tr from-black/20 via-transparent to-white/10 pointer-events-none" />
-        <Flame className="w-5 h-5 text-amber-200 fill-amber-300 drop-shadow-xs" />
+        <Flame className="w-4 h-4 text-amber-300 fill-amber-300" />
       </div>
 
-      <div className="flex flex-col">
+      <div className="flex flex-col min-w-0 leading-tight">
         <span
-          className={`tracking-wider uppercase font-extrabold ${titleSizes[size]} ${
-            isLight ? 'text-white' : 'text-stone-900'
+          className={`font-extrabold tracking-tight whitespace-nowrap ${titleSizes[size]} ${
+            isLight ? 'text-white' : 'text-[#141210]'
           }`}
         >
           Semeadores de Fogo
         </span>
         {showSubtitle && (
           <span
-            className={`text-[10px] tracking-[0.2em] font-semibold uppercase ${
-              isLight ? 'text-red-200' : 'text-red-700'
+            className={`text-[10px] tracking-[0.16em] font-semibold uppercase whitespace-nowrap ${
+              isLight ? 'text-red-300' : 'text-red-700'
             }`}
           >
             Plataforma Global

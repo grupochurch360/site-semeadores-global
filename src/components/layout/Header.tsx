@@ -34,36 +34,36 @@ export const Header: React.FC<HeaderProps> = ({
   }, []);
 
   return (
-    <header className="h-16 bg-white/85 backdrop-blur-md border-b border-stone-200/80 px-4 sm:px-6 flex items-center justify-between sticky top-0 z-30">
-      <div className="flex items-center gap-3">
+    <header className="h-16 bg-white/85 backdrop-blur-md border-b border-stone-200/80 px-3 sm:px-6 flex items-center justify-between gap-2 sticky top-0 z-30">
+      <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
         <button
           onClick={onToggleSidebar}
-          className="p-2 rounded-lg text-stone-600 hover:text-stone-900 hover:bg-stone-100 lg:hidden cursor-pointer"
+          className="p-2 rounded-lg text-stone-600 hover:text-stone-900 hover:bg-stone-100 lg:hidden cursor-pointer shrink-0"
           aria-label="Abrir menu de navegação"
         >
           <Menu className="w-5 h-5" />
         </button>
 
-        <div>
-          <h1 className="text-base sm:text-lg font-bold text-[#141210] tracking-tight leading-tight">
+        <div className="min-w-0">
+          <h1 className="text-sm sm:text-lg font-bold text-[#141210] tracking-tight leading-tight truncate">
             {title}
           </h1>
           {subtitle && (
-            <p className="text-xs text-stone-500 hidden sm:block">
+            <p className="text-xs text-stone-500 hidden sm:block truncate">
               {subtitle}
             </p>
           )}
         </div>
       </div>
 
-      <div className="flex items-center gap-2 sm:gap-3">
+      <div className="flex items-center gap-1.5 sm:gap-3 shrink-0">
         {/* Regional Filter Selector (If Global Admin, can view all or filter by regional) */}
-        <div className="flex items-center bg-[#FAF8F5] rounded-lg px-2 py-1 border border-stone-200/90">
+        <div className="flex items-center bg-[#FAF8F5] rounded-lg px-1.5 sm:px-2 py-1 border border-stone-200/90 max-w-[130px] sm:max-w-none">
           <MapPin className="w-3.5 h-3.5 text-red-700 ml-1 hidden sm:block shrink-0" />
           <select
             value={activeRegionFilter}
             onChange={(e) => setActiveRegionFilter(e.target.value)}
-            className="bg-transparent text-xs font-semibold text-stone-800 py-1 px-1.5 focus:outline-hidden cursor-pointer"
+            className="bg-transparent text-[11px] sm:text-xs font-semibold text-stone-800 py-1 px-1 sm:px-1.5 focus:outline-hidden cursor-pointer w-full truncate"
             aria-label="Filtrar por regional"
           >
             {isAdmin && <option value="all">Todas as Regionais (Global)</option>}

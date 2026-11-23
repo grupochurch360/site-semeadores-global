@@ -103,7 +103,7 @@ export const AIAnalysisModal: React.FC<AIAnalysisModalProps> = ({ isOpen, onClos
               <Sparkles className="w-4 h-4 text-amber-300 animate-pulse" />
             </div>
             <div>
-              <h3 className="font-bold text-base text-stone-900 uppercase">
+              <h3 className="font-bold text-base text-[#141210]">
                 Relatório Oficial Consolidado por IA
               </h3>
               <p className="text-xs text-stone-500">
