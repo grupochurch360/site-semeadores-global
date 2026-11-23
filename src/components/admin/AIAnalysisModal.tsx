@@ -30,17 +30,20 @@ export const AIAnalysisModal: React.FC<AIAnalysisModalProps> = ({ isOpen, onClos
   } | null>(null);
   const [targetPeriod, setTargetPeriod] = useState<string>('5º Bimestre');
   const [copied, setCopied] = useState<boolean>(false);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   const fetchLatestReport = async (period: string, isCancelled?: () => boolean) => {
     try {
       setLoading(true);
+      setErrorMsg(null);
       const res = await api.analyzeReports(period);
       if (!isCancelled?.()) {
         setAnalysisResult(res);
       }
     } catch (err: any) {
       if (!isCancelled?.()) {
-        alert(err.message || 'Erro ao gerar relatório oficial por IA');
+        setAnalysisResult(null);
+        setErrorMsg(err?.message || 'Erro ao gerar relatório oficial por IA');
       }
     } finally {
       if (!isCancelled?.()) {
@@ -161,6 +164,14 @@ export const AIAnalysisModal: React.FC<AIAnalysisModalProps> = ({ isOpen, onClos
             )}
           </button>
         </div>
+
+        {/* Error Banner */}
+        {errorMsg && (
+          <div className="p-3 rounded-lg bg-red-50 border border-red-200 text-xs text-red-800 flex items-start gap-2 shrink-0">
+            <AlertCircle className="w-4 h-4 text-red-600 shrink-0 mt-0.5" />
+            <span>{errorMsg}</span>
+          </div>
+        )}
 
         {/* Results Area */}
         {analysisResult ? (

@@ -914,7 +914,8 @@ export function createApp(options?: { loginMaxAttempts?: number; useLiveAI?: boo
 
     let filteredReports = reports;
     if (targetPeriod) {
-      filteredReports = filteredReports.filter((r) => r.period.includes(targetPeriod));
+      const normalizedTarget = targetPeriod.toLowerCase();
+      filteredReports = filteredReports.filter((r) => r.period.toLowerCase().includes(normalizedTarget));
     }
     if (regionId) {
       filteredReports = filteredReports.filter((r) => r.regionId === regionId);
@@ -931,14 +932,35 @@ export function createApp(options?: { loginMaxAttempts?: number; useLiveAI?: boo
       return evDate >= dateRange.start && evDate <= dateRange.end;
     });
 
-    const reportedRegionIds = new Set(filteredReports.map((r) => r.regionId));
+    // Sincroniza métricas de evangelismos concluídos no período com os relatórios bimestrais
+    const effectiveReports = filteredReports.map((r) => {
+      const regionEvents = filteredEvangelisms.filter((ev) => ev.regionId === r.regionId);
+      if (regionEvents.length === 0) return r;
+      const evCount = regionEvents.length;
+      const evParticipants = regionEvents.reduce((sum, ev) => sum + (ev.actualParticipants || 0), 0);
+      const evSouls = regionEvents.reduce((sum, ev) => sum + (ev.soulsReached || 0), 0);
+      const evContacts = regionEvents.reduce((sum, ev) => sum + (ev.authorizedContacts || 0), 0);
+      const mergedLocations = Array.from(
+        new Set([...(r.locationsReached || []), ...regionEvents.map((ev) => ev.location).filter(Boolean)])
+      );
+      return {
+        ...r,
+        evangelismsCount: Math.max(r.evangelismsCount || 0, evCount),
+        totalParticipantsSum: Math.max(r.totalParticipantsSum || 0, evParticipants),
+        totalSoulsReached: Math.max(r.totalSoulsReached || 0, evSouls),
+        authorizedContactsCount: Math.max(r.authorizedContactsCount || 0, evContacts),
+        locationsReached: mergedLocations,
+      };
+    });
+
+    const reportedRegionIds = new Set(effectiveReports.map((r) => r.regionId));
     const missingRegions = regions
       .filter((rg) => !reportedRegionIds.has(rg.id) && (!regionId || rg.id === regionId))
       .map((rg) => rg.name);
 
-    const dataFingerprint = computeDataFingerprint(filteredReports, regions, filteredEvangelisms);
+    const dataFingerprint = computeDataFingerprint(effectiveReports, regions, filteredEvangelisms);
 
-    const summaryPayload = filteredReports.map((r) => {
+    const summaryPayload = effectiveReports.map((r) => {
       const reg = regions.find((rg) => rg.id === r.regionId);
       return {
         regional: reg ? reg.name : r.regionId,
@@ -991,17 +1013,29 @@ export function createApp(options?: { loginMaxAttempts?: number; useLiveAI?: boo
     let structuredReport: StructuredReportData | null = null;
     const failedAttempts: Array<{ model: string; reason: string }> = [];
 
+    const aiDeadlineMs = Date.now() + 15000;
     if (ai) {
       for (const route of modelRoute) {
+        const remainingMs = aiDeadlineMs - Date.now();
+        if (remainingMs <= 1000) {
+          failedAttempts.push({ model: route.label, reason: 'Tempo limite atingido (fallback acionado)' });
+          break;
+        }
         try {
-          const response = await ai.models.generateContent({
-            model: route.model,
-            contents: promptText,
-            config: {
-              responseMimeType: 'application/json',
-              ...(route.thinkingLevel ? { thinkingConfig: { thinkingLevel: route.thinkingLevel } } : {}),
-            },
-          });
+          const perCallTimeoutMs = Math.min(8000, remainingMs);
+          const response = await Promise.race([
+            ai.models.generateContent({
+              model: route.model,
+              contents: promptText,
+              config: {
+                responseMimeType: 'application/json',
+                ...(route.thinkingLevel ? { thinkingConfig: { thinkingLevel: route.thinkingLevel } } : {}),
+              },
+            }),
+            new Promise<never>((_, reject) =>
+              setTimeout(() => reject(new Error(`Timeout após ${perCallTimeoutMs}ms`)), perCallTimeoutMs)
+            ),
+          ]);
           if (response.text && response.text.trim()) {
             const parsedJson = extractJsonFromModelText(response.text);
             structuredReport = StructuredReportSchema.parse(parsedJson);
@@ -1018,9 +1052,9 @@ export function createApp(options?: { loginMaxAttempts?: number; useLiveAI?: boo
     }
 
     if (!structuredReport) {
-      structuredReport = buildFallbackStructuredReport(filteredReports, regions, periodMeta);
+      structuredReport = buildFallbackStructuredReport(effectiveReports, regions, periodMeta);
     } else {
-      structuredReport = reconcileStructuredReportWithDb(structuredReport, filteredReports, regions);
+      structuredReport = reconcileStructuredReportWithDb(structuredReport, effectiveReports, regions);
     }
 
     const html = renderOfficialReportHtml(structuredReport);
