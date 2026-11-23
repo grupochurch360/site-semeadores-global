@@ -903,7 +903,8 @@ export function createApp(options?: { loginMaxAttempts?: number; useLiveAI?: boo
   });
 
   app.post('/api/ai/analyze-reports', requireAuth, requireAdmin, async (req: AuthenticatedRequest, res: Response) => {
-    const user = req.user!;
+    try {
+      const user = req.user!;
     const { targetPeriod, regionId } = req.body || {};
 
     // Always read live data from storage so every new report/region/evangelism updates the output
@@ -1064,6 +1065,12 @@ export function createApp(options?: { loginMaxAttempts?: number; useLiveAI?: boo
       fallbackAttempts: failedAttempts,
       timestamp: record.createdAt,
     });
+    } catch (err: any) {
+      console.error('[AI Analyze Error]:', err);
+      res.status(500).json({
+        error: typeof err?.message === 'string' ? err.message : 'Erro interno ao gerar relatório oficial',
+      });
+    }
   });
 
   /* =========================================================================

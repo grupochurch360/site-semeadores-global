@@ -38,7 +38,12 @@ class ApiService {
         this.setToken(null);
       }
       const errData = await res.json().catch(() => ({}));
-      throw new Error(errData.error || `Erro ${res.status}: Falha na requisição`);
+      const rawError = errData?.error;
+      const errorMessage =
+        typeof rawError === 'string'
+          ? rawError
+          : rawError?.message || errData?.message || `Erro ${res.status}: Falha na requisição`;
+      throw new Error(errorMessage);
     }
 
     return res.json();

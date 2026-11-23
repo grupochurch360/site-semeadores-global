@@ -1,6 +1,7 @@
 import crypto from 'crypto';
 import fs from 'fs';
 import path from 'path';
+import { fileURLToPath } from 'url';
 import { z } from 'zod';
 import type { BimonthlyReport, EvangelismEvent, Region } from '../src/types/index.ts';
 
@@ -61,18 +62,25 @@ export const StructuredReportSchema = z.object({
 
 export type StructuredReportData = z.infer<typeof StructuredReportSchema>;
 
-const TEMPLATE_PATH = path.resolve(
-  process.cwd(),
-  'templates',
-  'relatorio-ia',
-  'modelo-relatorio-semeadores.html'
-);
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const TEMPLATE_CANDIDATES = [
+  path.resolve(process.cwd(), 'templates', 'relatorio-ia', 'modelo-relatorio-semeadores.html'),
+  path.resolve(__dirname, '..', 'templates', 'relatorio-ia', 'modelo-relatorio-semeadores.html'),
+];
 
 let cachedTemplateHtml: string | null = null;
 
 function getTemplateHtml(): string {
   if (!cachedTemplateHtml) {
-    cachedTemplateHtml = fs.readFileSync(TEMPLATE_PATH, 'utf-8');
+    const foundPath = TEMPLATE_CANDIDATES.find((p) => fs.existsSync(p));
+    if (!foundPath) {
+      throw new Error(
+        `Template oficial não encontrado. Caminhos verificados: ${TEMPLATE_CANDIDATES.join(', ')}`
+      );
+    }
+    cachedTemplateHtml = fs.readFileSync(foundPath, 'utf-8');
   }
   return cachedTemplateHtml;
 }
