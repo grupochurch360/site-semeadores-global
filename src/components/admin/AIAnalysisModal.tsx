@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Sparkles,
   X,
@@ -31,18 +31,37 @@ export const AIAnalysisModal: React.FC<AIAnalysisModalProps> = ({ isOpen, onClos
   const [targetPeriod, setTargetPeriod] = useState<string>('5º Bimestre');
   const [copied, setCopied] = useState<boolean>(false);
 
-  if (!isOpen) return null;
-
-  const handleGenerate = async () => {
+  const fetchLatestReport = async (period: string, isCancelled?: () => boolean) => {
     try {
       setLoading(true);
-      const res = await api.analyzeReports(targetPeriod);
-      setAnalysisResult(res);
+      const res = await api.analyzeReports(period);
+      if (!isCancelled?.()) {
+        setAnalysisResult(res);
+      }
     } catch (err: any) {
-      alert(err.message || 'Erro ao gerar relatório oficial por IA');
+      if (!isCancelled?.()) {
+        alert(err.message || 'Erro ao gerar relatório oficial por IA');
+      }
     } finally {
-      setLoading(false);
+      if (!isCancelled?.()) {
+        setLoading(false);
+      }
     }
+  };
+
+  useEffect(() => {
+    if (!isOpen) return;
+    let cancelled = false;
+    fetchLatestReport(targetPeriod, () => cancelled);
+    return () => {
+      cancelled = true;
+    };
+  }, [isOpen, targetPeriod]);
+
+  if (!isOpen) return null;
+
+  const handleGenerate = () => {
+    void fetchLatestReport(targetPeriod);
   };
 
   const handleOpenInNewTab = () => {
@@ -114,8 +133,12 @@ export const AIAnalysisModal: React.FC<AIAnalysisModalProps> = ({ isOpen, onClos
               onChange={(e) => setTargetPeriod(e.target.value)}
               className="px-2.5 py-1.5 text-xs bg-white border border-stone-200 rounded-md font-semibold text-stone-800 focus:outline-hidden"
             >
+              <option value="6º Bimestre">6º Bimestre (Nov/Dez 2026)</option>
               <option value="5º Bimestre">5º Bimestre (Set/Out 2026)</option>
               <option value="4º Bimestre">4º Bimestre (Jul/Ago 2026)</option>
+              <option value="3º Bimestre">3º Bimestre (Mai/Jun 2026)</option>
+              <option value="2º Bimestre">2º Bimestre (Mar/Abr 2026)</option>
+              <option value="1º Bimestre">1º Bimestre (Jan/Fev 2026)</option>
               <option value="">Todos os Bimestres Cadastrados</option>
             </select>
           </div>
@@ -178,6 +201,7 @@ export const AIAnalysisModal: React.FC<AIAnalysisModalProps> = ({ isOpen, onClos
 
             <div className="flex-1 min-h-[420px] border border-stone-200 rounded-xl overflow-hidden bg-stone-100">
               <iframe
+                key={`${analysisResult.id}-${analysisResult.dataFingerprint}`}
                 title="Prévia do Relatório Oficial Semeadores de Fogo"
                 srcDoc={analysisResult.html}
                 className="w-full h-full min-h-[420px] bg-white"

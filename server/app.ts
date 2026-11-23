@@ -20,6 +20,7 @@ import {
   renderOfficialReportHtml,
   computeDataFingerprint,
   parsePeriodMetadata,
+  reconcileStructuredReportWithDb,
   formatPlainSummary,
   type StructuredReportData,
 } from './reportTemplate.ts';
@@ -905,9 +906,10 @@ export function createApp(options?: { loginMaxAttempts?: number; useLiveAI?: boo
     const user = req.user!;
     const { targetPeriod, regionId } = req.body || {};
 
-    // Always read live data from storage so every new report/region updates the output
+    // Always read live data from storage so every new report/region/evangelism updates the output
     const reports = await storage.getAll('bimonthly_reports');
     const regions = await storage.getAll('regions');
+    const evangelisms = await storage.getAll('evangelism_events');
 
     let filteredReports = reports;
     if (targetPeriod) {
@@ -917,13 +919,23 @@ export function createApp(options?: { loginMaxAttempts?: number; useLiveAI?: boo
       filteredReports = filteredReports.filter((r) => r.regionId === regionId);
     }
 
+    const periodMeta = parsePeriodMetadata(targetPeriod);
+    const periodYear = Number(periodMeta.ano) || new Date().getFullYear();
+    const dateRange = targetPeriod ? getBimesterDateRange(targetPeriod, periodYear) : null;
+    const filteredEvangelisms = evangelisms.filter((ev) => {
+      if (ev.status !== 'completed') return false;
+      if (regionId && ev.regionId !== regionId) return false;
+      if (!dateRange) return true;
+      const evDate = new Date(ev.completedAt || ev.scheduledDate);
+      return evDate >= dateRange.start && evDate <= dateRange.end;
+    });
+
     const reportedRegionIds = new Set(filteredReports.map((r) => r.regionId));
     const missingRegions = regions
       .filter((rg) => !reportedRegionIds.has(rg.id) && (!regionId || rg.id === regionId))
       .map((rg) => rg.name);
 
-    const periodMeta = parsePeriodMetadata(targetPeriod);
-    const dataFingerprint = computeDataFingerprint(filteredReports, regions);
+    const dataFingerprint = computeDataFingerprint(filteredReports, regions, filteredEvangelisms);
 
     const summaryPayload = filteredReports.map((r) => {
       const reg = regions.find((rg) => rg.id === r.regionId);
@@ -1006,6 +1018,8 @@ export function createApp(options?: { loginMaxAttempts?: number; useLiveAI?: boo
 
     if (!structuredReport) {
       structuredReport = buildFallbackStructuredReport(filteredReports, regions, periodMeta);
+    } else {
+      structuredReport = reconcileStructuredReportWithDb(structuredReport, filteredReports, regions);
     }
 
     const html = renderOfficialReportHtml(structuredReport);

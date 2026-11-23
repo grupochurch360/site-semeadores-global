@@ -2,7 +2,7 @@ import crypto from 'crypto';
 import fs from 'fs';
 import path from 'path';
 import { z } from 'zod';
-import type { BimonthlyReport, Region } from '../src/types/index.ts';
+import type { BimonthlyReport, EvangelismEvent, Region } from '../src/types/index.ts';
 
 export const RegionalEntrySchema = z.object({
   nome: z.string().min(1),
@@ -87,20 +87,31 @@ export function renderOfficialReportHtml(reportData: StructuredReportData): stri
   }
   return template.replace(
     pattern,
-    `<script id="report-data" type="application/json">${safeJson}</script>`
+    () => `<script id="report-data" type="application/json">${safeJson}</script>`
   );
 }
 
-export function computeDataFingerprint(reports: BimonthlyReport[], regions: Region[]): string {
+export function computeDataFingerprint(
+  reports: BimonthlyReport[],
+  regions: Region[],
+  evangelisms: EvangelismEvent[] = []
+): string {
   const payload = JSON.stringify({
     reports: reports.map((r) => ({
       id: r.id,
+      regionId: r.regionId,
+      period: r.period,
+      year: r.year,
+      coordinatorName: r.coordinatorName,
       updatedAt: r.updatedAt,
       status: r.status,
       evangelismsCount: r.evangelismsCount,
       totalParticipantsSum: r.totalParticipantsSum,
       totalSoulsReached: r.totalSoulsReached,
       authorizedContactsCount: r.authorizedContactsCount,
+      locationsReached: r.locationsReached,
+      activitiesDescription: r.activitiesDescription,
+      testimoniesSummary: r.testimoniesSummary,
       strengths: r.strengths,
       challenges: r.challenges,
       regionalNeeds: r.regionalNeeds,
@@ -110,9 +121,23 @@ export function computeDataFingerprint(reports: BimonthlyReport[], regions: Regi
     regions: regions.map((rg) => ({
       id: rg.id,
       name: rg.name,
+      city: rg.city,
+      state: rg.state,
+      coordinatorName: rg.coordinatorName,
       status: rg.status,
       evangelismFrequency: rg.evangelismFrequency,
       membersCount: rg.membersCount,
+    })),
+    evangelisms: evangelisms.map((ev) => ({
+      id: ev.id,
+      regionId: ev.regionId,
+      status: ev.status,
+      scheduledDate: ev.scheduledDate,
+      completedAt: ev.completedAt,
+      location: ev.location,
+      actualParticipants: ev.actualParticipants,
+      soulsReached: ev.soulsReached,
+      authorizedContacts: ev.authorizedContacts,
     })),
   });
   return crypto.createHash('sha256').update(payload).digest('hex').slice(0, 16);
@@ -359,6 +384,61 @@ export function buildFallbackStructuredReport(
           ? 'Solicitar às coordenações pendentes o envio dos relatórios para atualizar automaticamente esta consolidação.'
           : 'Manter o acompanhamento bimestral regular.',
     },
+  };
+}
+
+/**
+ * Garante que todas as métricas numéricas e metadados factuais das regionais no documento
+ * correspondam exatamente aos dados reais mais recentes do banco de dados, evitando valores
+ * defasados ou alucinados pelo modelo de IA.
+ */
+export function reconcileStructuredReportWithDb(
+  aiReport: StructuredReportData,
+  filteredReports: BimonthlyReport[],
+  allRegions: Region[]
+): StructuredReportData {
+  const periodMeta = {
+    periodo: aiReport.periodo,
+    meses: aiReport.meses,
+    ano: aiReport.ano,
+    intervalo: aiReport.intervalo,
+  };
+  const dbBaseline = buildFallbackStructuredReport(filteredReports, allRegions, periodMeta);
+
+  const normalizeName = (value: string) =>
+    value
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/^regional\s+/i, '')
+      .trim();
+
+  const reconciledRegionais = dbBaseline.regionais.map((dbEntry) => {
+    const dbNorm = normalizeName(dbEntry.nome);
+    const aiMatch = aiReport.regionais.find((ar) => {
+      const arNorm = normalizeName(ar.nome);
+      return arNorm === dbNorm || arNorm.includes(dbNorm) || dbNorm.includes(arNorm);
+    });
+    if (!aiMatch) return dbEntry;
+
+    return {
+      ...aiMatch,
+      nome: dbEntry.nome,
+      local: dbEntry.local,
+      coordenador: dbEntry.coordenador,
+      acoes: dbEntry.acoes,
+      participacoes: dbEntry.participacoes,
+      almas: dbEntry.almas,
+      contatos: dbEntry.contatos,
+      frequencia: dbEntry.frequencia,
+      status: dbEntry.status,
+      diagnostico: dbEntry.diagnostico,
+    };
+  });
+
+  return {
+    ...aiReport,
+    regionais: reconciledRegionais,
   };
 }
 

@@ -6,6 +6,7 @@ import type { AddressInfo } from 'node:net';
 import { hashPassword, verifyPassword, signSessionToken, verifySessionToken } from './auth.ts';
 import { createApp, getBimesterDateRange } from './app.ts';
 import { db } from './db.ts';
+import { reconcileStructuredReportWithDb, buildFallbackStructuredReport, parsePeriodMetadata } from './reportTemplate.ts';
 
 test('hashPassword and verifyPassword validate matching passwords and reject wrong ones', () => {
   const hash = hashPassword('MinhaSenhaForte!2026');
@@ -235,6 +236,39 @@ test('API enforces auth, rate limiting, user deactivation, LGPD erasure, regiona
     assert.equal(historyRes.status, 200);
     const history = (await historyRes.json()) as Array<{ id: string }>;
     assert.ok(history.length >= 2);
+
+    // 11. Updating report text or adding a completed evangelism updates dataFingerprint, and '$' in text is preserved
+    const updateTextRes = await fetch(`${baseUrl}/api/reports/rep-sp-05-2026`, {
+      method: 'PUT',
+      headers: adminHeaders,
+      body: JSON.stringify({
+        activitiesDescription: 'Ação especial com custo R$ 150,00 e $$ teste de substituição.',
+      }),
+    });
+    assert.equal(updateTextRes.status, 200);
+
+    const aiRes3 = await fetch(`${baseUrl}/api/ai/analyze-reports`, {
+      method: 'POST',
+      headers: adminHeaders,
+      body: JSON.stringify({ targetPeriod: '5º Bimestre' }),
+    });
+    assert.equal(aiRes3.status, 200);
+    const aiData3 = (await aiRes3.json()) as {
+      dataFingerprint: string;
+      html: string;
+    };
+    assert.notEqual(aiData3.dataFingerprint, aiData2.dataFingerprint);
+    assert.ok(aiData3.html.includes('R$ 150,00 e $$ teste de substituição.'));
+
+    // 12. reconcileStructuredReportWithDb overrides stale AI numbers with live DB values
+    const liveReports = db.get('bimonthly_reports').filter((r) => r.period.includes('5º Bimestre'));
+    const liveRegions = db.get('regions');
+    const staleAiReport = buildFallbackStructuredReport(liveReports, liveRegions, parsePeriodMetadata('5º Bimestre'));
+    staleAiReport.regionais[0].almas = 1;
+    staleAiReport.regionais[0].acoes = 0;
+    const reconciled = reconcileStructuredReportWithDb(staleAiReport, liveReports, liveRegions);
+    assert.equal(reconciled.regionais[0].almas, liveReports[0].totalSoulsReached);
+    assert.equal(reconciled.regionais[0].acoes, liveReports[0].evangelismsCount);
   } finally {
     await new Promise<void>((resolve) => server.close(() => resolve()));
     if (backupRaw !== null) {
