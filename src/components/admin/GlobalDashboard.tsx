@@ -77,20 +77,20 @@ export const GlobalDashboard: React.FC<GlobalDashboardProps> = ({
   return (
     <div className="p-4 sm:p-6 lg:p-8 space-y-6 max-w-7xl mx-auto">
       {/* Welcome Banner */}
-      <div className="bg-gradient-to-r from-stone-900 via-stone-850 to-red-950 rounded-2xl p-6 text-white border border-stone-800 shadow-xs flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+      <div className="bg-gradient-to-br from-[#141210] via-[#1f1816] to-[#450a0a] rounded-2xl p-6 sm:p-7 text-white border border-stone-800/80 shadow-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-5">
         <div>
-          <div className="flex items-center gap-2 mb-1.5">
-            <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-red-800/80 text-red-200 border border-red-700/50">
+          <div className="flex items-center gap-2 mb-2">
+            <span className="px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-red-900/70 text-red-100 border border-red-700/50">
               Supervisão Operacional
             </span>
-            <span className="text-xs text-stone-400 font-mono">
-              Base de Dados Persistente
+            <span className="text-[11px] text-stone-400">
+              Dados em tempo real
             </span>
           </div>
-          <h2 className="text-xl sm:text-2xl font-black uppercase tracking-tight">
+          <h2 className="text-xl sm:text-2xl font-extrabold tracking-tight">
             Painel Geral de Supervisão Ministerial
           </h2>
-          <p className="text-xs sm:text-sm text-stone-300 mt-1 max-w-2xl leading-relaxed">
+          <p className="text-xs sm:text-sm text-stone-300 mt-1.5 max-w-2xl leading-relaxed">
             Acompanhamento centralizado das regionais, evangelismos, relatórios bimestrais e
             inteligência estratégica dos Semeadores de Fogo.
           </p>
@@ -99,7 +99,7 @@ export const GlobalDashboard: React.FC<GlobalDashboardProps> = ({
         {isAdmin && (
           <button
             onClick={onOpenAIModal}
-            className="px-4 py-2.5 bg-red-700 hover:bg-red-800 text-white rounded-xl text-xs font-bold uppercase tracking-wider transition-all shadow-md flex items-center gap-2 shrink-0 cursor-pointer"
+            className="px-4 py-2.5 bg-red-700 hover:bg-red-600 text-white rounded-xl text-xs font-semibold transition-colors shadow-md flex items-center gap-2 shrink-0 cursor-pointer"
           >
             <Sparkles className="w-4 h-4 text-amber-300" />
             <span>Diagnóstico IA dos Relatórios</span>

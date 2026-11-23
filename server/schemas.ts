@@ -113,6 +113,8 @@ export const createReportSchema = z.object({
   activitiesDescription: z.string().optional(),
   totalSoulsReached: z.coerce.number().int().min(0).optional(),
   authorizedContactsCount: z.coerce.number().int().min(0).optional(),
+  referredToConsolidationCount: z.coerce.number().int().min(0).optional(),
+  activeFollowUpsCount: z.coerce.number().int().min(0).optional(),
   testimoniesSummary: z.string().optional(),
   strengths: z.string().optional(),
   challenges: z.string().optional(),

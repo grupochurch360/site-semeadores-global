@@ -34,18 +34,18 @@ export const Header: React.FC<HeaderProps> = ({
   }, []);
 
   return (
-    <header className="h-16 bg-white border-b border-stone-200 px-4 sm:px-6 flex items-center justify-between sticky top-0 z-30 shadow-2xs">
+    <header className="h-16 bg-white/85 backdrop-blur-md border-b border-stone-200/80 px-4 sm:px-6 flex items-center justify-between sticky top-0 z-30">
       <div className="flex items-center gap-3">
         <button
           onClick={onToggleSidebar}
-          className="p-2 rounded-md text-stone-600 hover:text-stone-900 hover:bg-stone-100 lg:hidden"
+          className="p-2 rounded-lg text-stone-600 hover:text-stone-900 hover:bg-stone-100 lg:hidden cursor-pointer"
           aria-label="Abrir menu de navegação"
         >
           <Menu className="w-5 h-5" />
         </button>
 
         <div>
-          <h1 className="text-base sm:text-lg font-bold text-stone-900 leading-tight">
+          <h1 className="text-base sm:text-lg font-bold text-[#141210] tracking-tight leading-tight">
             {title}
           </h1>
           {subtitle && (
@@ -56,14 +56,14 @@ export const Header: React.FC<HeaderProps> = ({
         </div>
       </div>
 
-      <div className="flex items-center gap-2 sm:gap-4">
+      <div className="flex items-center gap-2 sm:gap-3">
         {/* Regional Filter Selector (If Global Admin, can view all or filter by regional) */}
-        <div className="flex items-center bg-stone-100 rounded-lg p-1 border border-stone-200">
-          <MapPin className="w-4 h-4 text-red-700 ml-1.5 hidden sm:block" />
+        <div className="flex items-center bg-[#FAF8F5] rounded-lg px-2 py-1 border border-stone-200/90">
+          <MapPin className="w-3.5 h-3.5 text-red-700 ml-1 hidden sm:block shrink-0" />
           <select
             value={activeRegionFilter}
             onChange={(e) => setActiveRegionFilter(e.target.value)}
-            className="bg-transparent text-xs font-semibold text-stone-800 py-1 px-2 focus:outline-hidden cursor-pointer"
+            className="bg-transparent text-xs font-semibold text-stone-800 py-1 px-1.5 focus:outline-hidden cursor-pointer"
             aria-label="Filtrar por regional"
           >
             {isAdmin && <option value="all">Todas as Regionais (Global)</option>}

@@ -68,7 +68,7 @@ function MainApp() {
   };
 
   return (
-    <div className="min-h-screen bg-stone-50 flex">
+    <div className="min-h-screen bg-[#FAF8F5] flex">
       {/* Sidebar */}
       <Sidebar
         currentTab={currentTab}

@@ -41,11 +41,11 @@ export const LoginView: React.FC<LoginViewProps> = ({ onBackToPublic }) => {
   };
 
   return (
-    <div className="min-h-screen bg-stone-950 flex flex-col items-center justify-center p-4 relative overflow-hidden">
-      <div className="w-full max-w-md bg-white rounded-2xl shadow-2xl border border-stone-200 overflow-hidden">
-        <div className="bg-stone-900 px-6 py-6 text-white flex flex-col items-center text-center border-b border-stone-800">
+    <div className="min-h-screen bg-[#141210] flex flex-col items-center justify-center p-4 relative overflow-hidden">
+      <div className="w-full max-w-md bg-white rounded-2xl shadow-2xl border border-stone-200/80 overflow-hidden">
+        <div className="bg-gradient-to-b from-[#141210] to-[#1f1917] px-6 py-7 text-white flex flex-col items-center text-center border-b border-stone-800">
           <BrandLogo variant="white" size="sm" />
-          <h1 className="text-lg font-black uppercase tracking-wider mt-4">
+          <h1 className="text-lg font-extrabold tracking-tight mt-4">
             Portal da Liderança
           </h1>
           <p className="text-xs text-stone-400 mt-1">

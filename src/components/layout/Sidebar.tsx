@@ -73,16 +73,16 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
       {/* Sidebar container */}
       <aside
-        className={`fixed top-0 bottom-0 left-0 z-50 w-72 bg-stone-900 text-stone-300 border-r border-stone-800 flex flex-col transition-transform duration-300 ease-in-out lg:translate-x-0 ${
+        className={`fixed top-0 bottom-0 left-0 z-50 w-72 bg-[#141210] text-stone-300 border-r border-stone-800/80 flex flex-col transition-transform duration-300 ease-in-out lg:translate-x-0 ${
           isOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
         {/* Brand Header */}
-        <div className="h-16 px-5 flex items-center justify-between border-b border-stone-800/80 bg-stone-950/40">
+        <div className="h-16 px-5 flex items-center justify-between border-b border-stone-800/70 bg-black/25">
           <BrandLogo variant="white" size="sm" />
           <button
             onClick={onClose}
-            className="p-1 rounded-md text-stone-400 hover:text-white hover:bg-stone-800 lg:hidden"
+            className="p-1.5 rounded-lg text-stone-400 hover:text-white hover:bg-stone-800/80 lg:hidden cursor-pointer"
             aria-label="Fechar menu"
           >
             <X className="w-5 h-5" />
@@ -91,17 +91,17 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
         {/* AI Strategic Intelligence Trigger Button */}
         {isAdmin && (
-          <div className="p-3 mx-3 mt-3 bg-gradient-to-r from-red-950/80 to-stone-900 rounded-lg border border-red-900/40 shadow-xs">
-            <div className="flex items-center gap-2 mb-1.5 text-red-300 font-semibold text-xs tracking-wider uppercase">
-              <Sparkles className="w-3.5 h-3.5 text-amber-300 animate-pulse" />
+          <div className="p-3.5 mx-3 mt-4 bg-gradient-to-br from-red-950/75 via-stone-900 to-stone-900 rounded-xl border border-red-900/40">
+            <div className="flex items-center gap-2 mb-1 text-amber-200 font-semibold text-xs">
+              <Sparkles className="w-3.5 h-3.5 text-amber-300" />
               <span>Inteligência dos Relatórios</span>
             </div>
-            <p className="text-[11px] text-stone-400 mb-2 leading-relaxed">
-              Diagnóstico bimestral automatizado com Gemini AI para a Direção Global.
+            <p className="text-[11px] text-stone-400 mb-2.5 leading-relaxed">
+              Gere o documento A4 consolidado com dados reais em tempo real.
             </p>
             <button
               onClick={onOpenAIModal}
-              className="w-full py-1.5 px-2.5 text-xs font-semibold bg-red-800 hover:bg-red-700 text-white rounded-md transition-colors flex items-center justify-center gap-1.5 shadow-xs cursor-pointer"
+              className="w-full py-2 px-3 text-xs font-semibold bg-red-700 hover:bg-red-600 text-white rounded-lg transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
             >
               <span>Gerar Diagnóstico IA</span>
               <ChevronRight className="w-3.5 h-3.5" />
