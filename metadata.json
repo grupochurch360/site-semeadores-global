@@ -1,6 +1,6 @@
 {
   "name": "Semeadores de Fogo Global",
-  "description": "Missões evangelísticas e ações sociais do Semeadores de Fogo, ministério evangelístico da EMIGRA.",
+  "description": "Missões evangelísticas e ações sociais do Semeadores de Fogo, ministério evangelístico da MGRA.",
   "requestFramePermissions": [],
   "majorCapabilities": [
     "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"

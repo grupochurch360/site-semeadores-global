@@ -38,7 +38,9 @@ for (const width of [1024, 1920, 2560]) {
     await page.goto('/');
     const photo = page.locator('.desktop-blessing');
     await expect(photo).toBeVisible();
-    await expect(photo).toHaveCSS('background-size', 'contain');
+    const bounds = (await photo.boundingBox())!;
+    expect(Math.abs(bounds.height - bounds.width * 941 / 1672)).toBeLessThan(1);
+    await expect(photo).toHaveCSS('background-size', 'cover');
     await expect(photo).toHaveCSS('background-image', /bencao-noturna.webp/);
     await expect(page.locator('.mission-photos')).toBeHidden();
   });

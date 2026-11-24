@@ -2,7 +2,7 @@
 
 ## 1. Direção editorial
 
-A página inicial apresenta o ministério evangelístico da EMIGRA, sua presença no Brasil e o trabalho missionário no Nordeste. O brasão identifica o ministério e a chamada principal leva à seção Nossa missão.
+A página inicial apresenta o ministério evangelístico da MGRA, sua presença no Brasil e o trabalho missionário no Nordeste. O brasão identifica o ministério e a chamada principal leva à seção Nossa missão.
 
 ## 2. Movimento e navegação
 

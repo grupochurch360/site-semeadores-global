@@ -105,13 +105,13 @@
 .desktop-blessing { display:none; }
 @media (min-width:1024px) {
   .movement-site .mission-hero { height:auto; }
-  .movement-site .mission-hero .street-stage { position:relative; top:auto; }
+  .movement-site .mission-hero .street-stage { position:relative; top:auto; height:auto; aspect-ratio:1672 / 941; }
   .mission-hero .mission-photos, .mission-hero .street-progress { display:none; }
   .desktop-blessing {
     display:block;
     position:absolute;
     inset:0;
     z-index:-3;
-    background: #071923 url('/acervo/bencao-noturna.webp') center right / contain no-repeat;
+    background: #071923 url('/acervo/bencao-noturna.webp') center / cover no-repeat;
   }
 }

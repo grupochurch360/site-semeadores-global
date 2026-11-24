@@ -90,8 +90,8 @@ export function InstitutionalLanding() {
         <div className="chapter-wrap purpose-opening">
           <div className="chapter-prose">
             <h2 id="purpose-title" className="chapter-title">Ganhar almas para Jesus.</h2>
-            <p>O Semeadores de Fogo é o ministério evangelístico da EMIGRA. Em São Paulo, Minas Gerais e Rio de Janeiro, nossos grupos vão às ruas para compartilhar o Evangelho, orar com as pessoas e ouvir suas histórias.</p>
-            <p>Queremos alcançar os quatro cantos do Brasil e fortalecer as igrejas da EMIGRA para que sejam referências em evangelismo onde vivem e servem.</p>
+            <p>O Semeadores de Fogo é o ministério evangelístico da MGRA. Em São Paulo, Minas Gerais e Rio de Janeiro, nossos grupos vão às ruas para compartilhar o Evangelho, orar com as pessoas e ouvir suas histórias.</p>
+            <p>Queremos alcançar os quatro cantos do Brasil e fortalecer as igrejas da MGRA para que sejam referências em evangelismo onde vivem e servem.</p>
           </div>
           <img className="chapter-still" src="/acervo/encontro.webp" alt="Comunidade reunida durante uma ação dos Semeadores de Fogo" loading="lazy" />
         </div>
