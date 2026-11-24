@@ -2,15 +2,11 @@
 
 ## 1. Direção editorial
 
-O site público abre com a missão do Semeadores e com arte ilustrativa original de uma rua brasileira em contraluz e brasão oficial na navegação. O visitante segue para as regionais pelo CTA principal. A entrada da liderança fica no cabeçalho. As seções seguintes alternam superfícies claras e azul-marinho. Propósito, presença regional e currículo usam filetes e listas para reduzir a repetição de cartões.
+A página inicial apresenta o ministério evangelístico da EMIGRA, sua presença no Brasil e o trabalho missionário no Nordeste. O brasão identifica o ministério e a chamada principal leva à seção Nossa missão.
 
-## 2. Referências e movimento
+## 2. Movimento e navegação
 
-- **Dunamis Movement e Pockets:** escala tipográfica de manifesto e transição da mensagem para a presença do movimento. O Semeadores usa texto próprio, o brasão oficial e um índice de cenas que também dá acesso às seções.
-- **DSM:** os módulos aparecem como etapas numeradas da formação.
-- **Instituto Akachi:** o contraste entre abertura e bloco institucional informa a passagem para a superfície clara de leitura.
-- **Movimento:** o filme editorial tem nove segundos e três tomadas ilustrativas: evangelismo na rua, formação bíblica e a cidade ao anoitecer. A rolagem controla o tempo, e os capítulos podem ser acionados pelo teclado. Com toque, janela estreita, movimento reduzido ou economia de dados, a imagem estática mantém os caminhos para cada seção.
-- **Área interna:** o login herda o brasão e o contraste entre marinho e papel. O painel abre com um cabeçalho claro que dá prioridade aos dados e às ações de trabalho.
+Três fotografias do acervo acompanham a rolagem no celular e no desktop. A montagem alterna cruzada, visita de campo e oração. A área administrativa tem entrada direta em `/admin`.
 
 ## 3. Paleta Oficial e Tokens (`src/index.css`)
 

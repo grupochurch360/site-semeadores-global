@@ -13,7 +13,7 @@ import { AIAnalysisModal } from './components/admin/AIAnalysisModal.tsx';
 type View = 'public' | 'admin';
 
 function viewFromUrl(): View {
-  return new URLSearchParams(window.location.search).get('view') === 'public' ? 'public' : 'admin';
+  return /^\/admin\/?$/.test(window.location.pathname) ? 'admin' : 'public';
 }
 
 function MainApp() {
@@ -43,8 +43,8 @@ function MainApp() {
 
   function navigateTo(view: View) {
     const url = new URL(window.location.href);
-    if (view === 'public') url.searchParams.set('view', 'public');
-    else url.searchParams.delete('view');
+    url.pathname = view === 'admin' ? '/admin' : '/';
+    url.searchParams.delete('view');
     url.hash = '';
     window.history.pushState(null, '', url);
     setCurrentView(view);
@@ -65,7 +65,7 @@ function MainApp() {
 
   if (currentView === 'public') {
     return (
-      <InstitutionalLanding onEnterPortal={() => navigateTo('admin')} />
+      <InstitutionalLanding />
     );
   }
 

@@ -1,6 +1,6 @@
 {
   "name": "Semeadores de Fogo Global",
-  "description": "Plataforma oficial de gestão ministerial, supervisão de regionais, relatórios bimestrais e inteligência evangelística dos Semeadores de Fogo Global.",
+  "description": "Missões evangelísticas e ações sociais do Semeadores de Fogo, ministério evangelístico da EMIGRA.",
   "requestFramePermissions": [],
   "majorCapabilities": [
     "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"

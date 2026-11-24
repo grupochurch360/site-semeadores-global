@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 
 test.describe('Semeadores de Fogo Global — Autenticação, Menu Limpo e Isolamento', () => {
   test('exibe tela de login ao entrar sem sessão e permite acessar o site público', async ({ page }) => {
-    await page.goto('/');
+    await page.goto('/admin');
     await expect(page.getByText('Portal da Liderança')).toBeVisible();
     await expect(page.getByLabel('E-mail Ministerial')).toBeVisible();
 
@@ -11,7 +11,7 @@ test.describe('Semeadores de Fogo Global — Autenticação, Menu Limpo e Isolam
   });
 
   test('login como Direção Global exibe apenas os módulos essenciais no menu lateral', async ({ page }) => {
-    await page.goto('/');
+    await page.goto('/admin');
     await page.getByLabel('E-mail Ministerial').fill('lucas@semeadoresdefogo.org');
     await page.getByLabel('Senha').fill('Semeadores@2026');
     await page.getByRole('button', { name: 'Entrar no Portal' }).click();
@@ -43,7 +43,7 @@ test.describe('Semeadores de Fogo Global — Autenticação, Menu Limpo e Isolam
   });
 
   test('login como Coordenação Regional SP restringe acesso apenas à regional SP', async ({ page }) => {
-    await page.goto('/');
+    await page.goto('/admin');
     await page.getByLabel('E-mail Ministerial').fill('marcos.sp@semeadoresdefogo.org');
     await page.getByLabel('Senha').fill('Semeadores@2026');
     await page.getByRole('button', { name: 'Entrar no Portal' }).click();

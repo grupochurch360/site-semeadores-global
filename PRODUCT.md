@@ -19,8 +19,8 @@ Plataforma oficial de apresentação institucional e gestão ministerial dos **S
 - **Inteligência Artificial (Relatório Oficial A4):** Rota `POST /api/ai/analyze-reports` com `@google/genai`, fallback automático para motor analítico local (`server/reportTemplate.ts`), reconciliação numérica obrigatória com os dados reais do banco e renderização HTML oficial (`templates/relatorio-ia/modelo-relatorio-semeadores.html`).
 
 ## 4. Telas e Módulos Ativos
-1. **Site Institucional Público** (`InstitutionalLanding.tsx`)
-2. **Autenticação do Portal** (`LoginView.tsx`)
+1. **Site Institucional Público em `/`** (`InstitutionalLanding.tsx`)
+2. **Autenticação do Portal em `/admin`** (`LoginView.tsx`)
 3. **Dashboard Global** (`GlobalDashboard.tsx`)
 4. **Regionais** (`RegionsModule.tsx`)
 5. **Evangelismos** (`EvangelismsModule.tsx`)
