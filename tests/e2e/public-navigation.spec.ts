@@ -14,7 +14,7 @@ test('home pública e acesso administrativo direto, com recarga e histórico', a
   await expect(page.getByLabel('E-mail Ministerial')).toBeVisible();
 });
 
-for (const width of [360, 1440]) {
+for (const width of [360, 768]) {
   test('três fotos acompanham a rolagem em ambos os sentidos a ' + width + 'px', async ({ page }) => {
     await page.setViewportSize({ width, height: 800 });
     await page.goto('/#missao');
@@ -30,5 +30,16 @@ for (const width of [360, 1440]) {
       await expect(photos.nth(2)).toHaveCSS('opacity', String(third));
       await expect.poll(() => page.locator('.mission-hero .street-stage').evaluate(el => Math.round(el.getBoundingClientRect().top))).toBe(64);
     }
+  });
+}
+for (const width of [1024, 1920, 2560]) {
+  test('desktop exibe a fotografia inteira a ' + width + 'px', async ({ page }) => {
+    await page.setViewportSize({width, height:900});
+    await page.goto('/');
+    const photo = page.locator('.desktop-blessing');
+    await expect(photo).toBeVisible();
+    await expect(photo).toHaveCSS('background-size', 'contain');
+    await expect(photo).toHaveCSS('background-image', /bencao-noturna.webp/);
+    await expect(page.locator('.mission-photos')).toBeHidden();
   });
 }

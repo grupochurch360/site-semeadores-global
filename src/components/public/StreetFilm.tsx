@@ -42,6 +42,7 @@ export function StreetFilm() {
     <div className="street-stage" ref={stage}>
       <div className="mission-photos" aria-hidden="true">{photos.map(({ file, position }, i) =>
         <img key={file} src={'/acervo/' + file + '.webp'} alt="" fetchPriority={i === 0 ? 'high' : 'auto'} style={{ objectPosition: position }} />)}</div>
+      <div className="desktop-blessing" role="img" aria-label="Oração durante um encontro noturno ao ar livre" />
       <div className="street-shade" />
       <div className="street-layout"><div className="street-copy">
         <h1 id="hero-title" className="street-title"><span>Semeadores</span><em>de Fogo.</em></h1>

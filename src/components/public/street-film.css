@@ -102,3 +102,16 @@
   .mission-photos img:nth-child(2){opacity:round(var(--shot-two,0),1)}
   .mission-photos img:nth-child(3){opacity:round(var(--shot-three,0),1)}
 }
+.desktop-blessing { display:none; }
+@media (min-width:1024px) {
+  .movement-site .mission-hero { height:auto; }
+  .movement-site .mission-hero .street-stage { position:relative; top:auto; }
+  .mission-hero .mission-photos, .mission-hero .street-progress { display:none; }
+  .desktop-blessing {
+    display:block;
+    position:absolute;
+    inset:0;
+    z-index:-3;
+    background: #071923 url('/acervo/bencao-noturna.webp') center right / contain no-repeat;
+  }
+}
