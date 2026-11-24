@@ -107,3 +107,52 @@
     display: block !important;
   }
 }
+
+/* Institutional cover and leadership entry share the official emblem and navy. */
+.public-nav-inner { padding-inline: clamp(1.3rem, 5vw, 6.5rem); }
+.movement-site section[id] { scroll-margin-top: 5.25rem; }
+.movement-site section[id] h2 {
+  font-size: clamp(2rem, 4.5vw, 4.5rem);
+  line-height: 1;
+  letter-spacing: -.04em;
+  max-width: 19ch;
+  text-wrap: balance;
+}
+.movement-site #missao, .movement-site #contato { background: #fbf7ee; }
+.movement-site #ensino { background: #fffdf8; }
+.movement-site #missao { border-top: .3rem solid var(--gold); }
+.movement-site #cruzadas { background: #e7edf1; }
+.movement-site #cruzadas > div > div { border-radius: 0; }
+.movement-site #contato h2 { margin-inline: auto; }
+.leadership-login { min-height: 100svh; display: grid; grid-template-columns: 1fr 1fr; background: #fbf7ee; }
+.leadership-login-brand {
+  padding: clamp(1.5rem, 5vw, 5rem);
+  background: radial-gradient(ellipse at center, #1f3548, #061a2d 68%);
+  color: #fff5e2;
+  display: grid;
+  align-content: space-between;
+  gap: 2rem;
+}
+.leadership-login-brand > p { color: var(--gold); font-size: .88rem; font-weight: 750; }
+.leadership-login-emblem { width: min(75%, 24rem); height: auto; margin-inline: auto; }
+.leadership-login-content { align-self: center; padding: 2.5rem clamp(1.25rem, 5vw, 5rem); width: min(100%, 38rem); margin-inline: auto; }
+.leadership-login-content h1 { font-size: clamp(2rem, 4.2vw, 3.6rem); font-weight: 850; line-height: 1; letter-spacing: -.04em; }
+.leadership-login-content > p { margin-block: .8rem 1.75rem; color: var(--muted); font-size: .9rem; }
+.leadership-overview { border-bottom: 1px solid var(--line); }
+@media (max-width: 699px) {
+  .leadership-login { grid-template-columns: 1fr; }
+  .leadership-login-brand { padding: 1rem 1.25rem; }
+  .leadership-login-emblem, .leadership-login-brand > p { display: none; }
+}
+@media (max-width: 380px) {
+  .movement-brand span:last-child:not(:first-child) { display: none; }
+  .movement-brand span:first-child { white-space: normal; }
+  .movement-brand { min-width: 0; flex-shrink: 1; }
+}
+@media (min-width: 700px) {
+  .leadership-login-brand {
+    background: linear-gradient(0deg, #061a2d, transparent 65%), url('/ruas-amanhecer.webp') 72% center / cover;
+  }
+  .leadership-login-emblem { visibility: hidden; }
+  .leadership-login-brand > p { font-size: clamp(1.9rem, 4.3vw, 4.7rem); line-height: 1; font-weight: 800; max-width: 12ch; letter-spacing: -.04em; color: #fff5e2; }
+}

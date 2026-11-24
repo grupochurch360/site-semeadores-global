@@ -41,19 +41,17 @@ export const LoginView: React.FC<LoginViewProps> = ({ onBackToPublic }) => {
   };
 
   return (
-    <div className="min-h-screen bg-[#EDF4F9] flex flex-col items-center justify-center p-4 sm:p-6">
-      <div className="w-full max-w-md bg-white rounded-2xl shadow-xl border border-[#DCE5ED] overflow-hidden">
-        <div className="bg-[#061A2D] px-6 py-7 text-white flex flex-col items-center text-center border-b-3 border-[#ED801F]">
-          <BrandLogo variant="white" size="md" />
-          <h1 className="text-lg font-extrabold tracking-tight mt-4 text-white">
-            Portal da Liderança
-          </h1>
-          <p className="text-xs text-[#B7C8D9] mt-1">
-            Acesso protegido por autenticação e isolamento regional (LGPD)
-          </p>
-        </div>
+    <main className="leadership-login">
+      <div className="leadership-login-brand">
+        <BrandLogo variant="white" size="md" />
+        <img className="leadership-login-emblem" src="/logo-semeadores.png" alt="" width={220} height={204} />
+        <p>Estrutura, unidade e missão.</p>
+      </div>
+      <div className="leadership-login-content">
+        <h1>Portal da Liderança</h1>
+        <p>Acesse as ferramentas da sua regional ou da Direção Global.</p>
 
-        <form onSubmit={handleSubmit} className="p-6 space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-5">
           {error && (
             <div
               role="alert"
@@ -72,6 +70,7 @@ export const LoginView: React.FC<LoginViewProps> = ({ onBackToPublic }) => {
               <Mail className="w-4 h-4 text-[#586E84] absolute left-3.5 top-1/2 -translate-y-1/2" />
               <input
                 id="login-email"
+                autoComplete="username"
                 type="email"
                 required
                 value={email}
@@ -90,6 +89,7 @@ export const LoginView: React.FC<LoginViewProps> = ({ onBackToPublic }) => {
               <Lock className="w-4 h-4 text-[#586E84] absolute left-3.5 top-1/2 -translate-y-1/2" />
               <input
                 id="login-password"
+                autoComplete="current-password"
                 type="password"
                 required
                 value={password}
@@ -138,6 +138,6 @@ export const LoginView: React.FC<LoginViewProps> = ({ onBackToPublic }) => {
           </button>
         </form>
       </div>
-    </div>
+    </main>
   );
 };

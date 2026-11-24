@@ -1,0 +1,93 @@
+/* Readable before the observer runs, including direct links to late chapters. */
+@media (prefers-reduced-motion: no-preference) {
+  .movement-site .chapter-in-view:is(h2, .doc-opening) {
+    animation: chapter-rise 640ms cubic-bezier(.2,.72,.18,1) backwards;
+  }
+  .movement-site .chapter-in-view:is(img, figure, article) {
+    animation: chapter-frame 750ms cubic-bezier(.16,.75,.2,1) backwards;
+  }
+  .street-title span, .street-title em {
+    animation: street-line 740ms cubic-bezier(.17,.74,.18,1) backwards;
+  }
+  .street-title em { animation-delay: 95ms; }
+  .movement-site header:has(.public-nav-inner) > div:nth-child(2) {
+    animation: chapter-rise 220ms ease-out;
+  }
+  .movement-site details[open] > :is(.field-detail,.course-detail) {
+    animation: chapter-rise 260ms ease-out;
+  }
+  @media (min-width:701px) {
+    .doc-reels article:nth-child(2).chapter-in-view { animation-delay: 75ms; }
+    .doc-reels article:nth-child(3).chapter-in-view { animation-delay: 150ms; }
+  }
+}
+@keyframes chapter-rise {
+  from { opacity:.48; transform: translateY(14px); }
+  to { opacity:1; transform: none; }
+}
+@keyframes chapter-frame {
+  from { clip-path:inset(4% 0 7%); opacity:.68; transform:translateY(10px); }
+  to { clip-path:inset(0); opacity:1; transform:none; }
+}
+@keyframes street-line {
+  from { clip-path:inset(0 0 95%); transform:translateY(.19em); }
+  to { clip-path:inset(-10%); transform:none; }
+}
+.movement-site .doc-opening {position:relative;isolation:isolate;background:#152122;overflow:hidden;padding:0;border:0;display:grid;align-items:end;min-height:clamp(24rem,95vw,41rem)}
+.movement-site .doc-opening>img {position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 32%;z-index:-2}
+.doc-opening::before {content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(0deg,#09171ef5,transparent 73%)}
+.movement-site .doc-opening>div {padding:clamp(1.25rem,4vw,3rem)}
+.movement-site .doc-opening p {max-width:29ch;color:#f7ebdc}
+@media(min-width:701px){
+  .movement-site .doc-opening {grid-template-columns:1fr;min-height:32rem}
+  .movement-site .doc-opening>img {width:63%;left:auto;object-position:50% 36%}
+  .doc-opening::before {background:linear-gradient(90deg,#102026 30%,transparent 79%)}
+}
+@media(max-width:700px){
+  .movement-site .doc-gallery img:nth-child(2){object-position:65% 30%}
+  .movement-site .doc-gallery img:nth-child(4){object-position:center 60%}
+  .movement-site .doc-profile img{width:auto;max-width:100%;margin:auto}
+  .movement-site .doc-reels{scroll-padding-inline:3px}
+}
+.street-cutaway,.mission-shot { display:none; }
+@supports (animation-timeline:view()) {
+  @media (prefers-reduced-motion:no-preference) {
+    .mission-sequence { height:148svh; view-timeline-name:--mission-scenes; }
+    .movement-site .mission-sequence .doc-opening {
+      position:sticky; top:4rem; height:min(76svh,46rem); min-height:0; animation:none;
+    }
+    .mission-shot {
+      display:block; position:absolute; inset:0; z-index:-2; background-size:cover;
+      animation:mission-splice linear both; animation-timeline:--mission-scenes;
+    }
+    .mission-shot.congregation {
+      background-image:url('/acervo/encontro.webp'); background-position:center;
+      animation-range:contain 6% contain 35%;
+    }
+    .mission-shot.prayer {
+      background-image:url('/acervo/oracao.webp'); background-position:40% 36%;
+      animation-range:contain 54% contain 82%;
+    }
+    @media(min-width:701px) { .mission-shot { left:37%; } }
+    @media(max-width:699px) and (min-height:520px) {
+      .street-story { height:148svh; view-timeline-name:--street-mobile; }
+      .street-story .street-stage { position:sticky; top:4rem; height:calc(100svh - 4rem); }
+      .street-cutaway {
+        display:block; position:absolute; inset:0; z-index:-2;
+        background:url('/acervo/cruzada.webp') 65% 34% / cover;
+        animation:street-dissolve linear both; animation-timeline:--street-mobile;
+        animation-range:contain 8% contain 85%;
+      }
+      .street-poster img {
+        animation:street-push linear both; animation-timeline:--street-mobile; animation-range:contain;
+      }
+    }
+  }
+}
+@keyframes mission-splice {
+  from { opacity:0; clip-path:inset(0 100% 0 0); transform:scale(1.075); }
+  18% { opacity:1; }
+  to { opacity:1; clip-path:inset(0); transform:scale(1); }
+}
+@keyframes street-push { to { transform:scale(1.12); } }
+@keyframes street-dissolve { from { opacity:0; transform:scale(1.08); } to { opacity:1; transform:scale(1); } }

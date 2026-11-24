@@ -1,0 +1,159 @@
+/* Public editorial chapters. Each surface has a different reading rhythm. */
+.public-chapter {
+  --chapter-paper: #f8f3e8;
+  --chapter-ink: #071c2c;
+  --chapter-shadow: #394c57;
+  padding-block: clamp(4.25rem, 8vw, 8.5rem);
+  color: var(--chapter-ink);
+}
+.chapter-wrap {
+  width: min(86%, 82rem);
+  margin-inline: auto;
+}
+.movement-site .public-chapter[id] .chapter-title {
+  max-width: 16ch;
+  margin: 0;
+  font-size: clamp(2.65rem, 5.75vw, 5.6rem);
+  font-weight: 820;
+  letter-spacing: -.055em;
+  line-height: .98;
+  text-wrap: balance;
+}
+.chapter-prose > p {
+  color: var(--chapter-shadow);
+  max-width: 44ch;
+  margin: 1.45rem 0 0;
+  font-size: clamp(.98rem, 1.15vw, 1.12rem);
+  line-height: 1.67;
+}
+.purpose-opening {
+  display: grid;
+  grid-template-columns: minmax(0,.84fr) minmax(0,1.16fr);
+  align-items: center;
+  gap: clamp(1.75rem, 6vw, 7rem);
+}
+.chapter-still {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1.5;
+  object-fit: cover;
+}
+.purpose-disciplines, .rally-details {
+  display: grid;
+  grid-template-columns: repeat(3,minmax(0,1fr));
+  gap: clamp(1.5rem, 4vw, 4.25rem);
+}
+.purpose-disciplines { margin-top: clamp(2.8rem, 5vw, 5rem); }
+.purpose-disciplines article {
+  padding-top: 1.35rem;
+  border-top: 1px solid #b5ad9f;
+}
+.purpose-disciplines svg { color: #92521b; width: 22px; height: 22px; margin-bottom: 1.15rem; }
+.purpose-disciplines h3, .rally-details h3, .school-live h3 {
+  font-size: 1rem;
+  font-weight: 750;
+  letter-spacing: -.02em;
+}
+.purpose-disciplines p, .rally-details p, .school-live p {
+  margin-top: .6rem;
+  color: var(--chapter-shadow);
+  font-size: .91rem;
+  line-height: 1.65;
+}
+.movement-site #regionais.chapter-field {
+  background: var(--navy);
+  color: var(--chapter-paper);
+}
+.field-directory, .contact-layout {
+  display: grid;
+  grid-template-columns: minmax(0,.84fr) minmax(0,1.16fr);
+  gap: clamp(2rem, 6vw, 7rem);
+}
+.chapter-field .chapter-prose > p { color: #c2cfd3; max-width: 33ch; }
+.chapter-field .chapter-title { color: var(--gold); }
+.field-locations { border-top: 1px solid #728491; }
+.field-locations details { border-bottom: 1px solid #5a6b77; }
+.public-chapter summary { list-style: none; display: flex; align-items: center; cursor: pointer; }
+.public-chapter summary::-webkit-details-marker { display: none; }
+.public-chapter summary:focus-visible { outline: 2px solid #b76b14; outline-offset: 3px; }
+.field-locations summary { gap: 1rem; min-height: 4.8rem; }
+.field-state { flex: 1; font-size: clamp(1.3rem,2.2vw,2rem); font-weight: 650; letter-spacing: -.04em; }
+.field-frequency { color: #c2cfd3; font-size: .78rem; font-weight: 550; }
+.chapter-chevron { flex-shrink: 0; transition: rotate .2s ease; }
+details[open] > summary .chapter-chevron { rotate: 180deg; }
+.field-locations details[open] .field-state, .field-locations summary:hover .field-state { color: var(--gold); }
+.field-detail { padding: 0 0 1.65rem; }
+.field-detail h3 { font-size: 1.12rem; font-weight: 730; margin: .48rem 0 .25rem; }
+.field-detail p, .field-links { font-size: .86rem; line-height: 1.6; color: #ccdae0; }
+.field-area, .field-links, .field-links span, .field-links button, .chapter-text-action, .chapter-footer a {
+  display: flex;
+  align-items: center;
+  gap: .55rem;
+}
+.field-links { justify-content: space-between; gap: 1rem; flex-wrap: wrap; margin-top: 1.2rem; }
+.field-links button { color: var(--gold); cursor: pointer; font-weight: 650; min-height: 2.75rem; }
+.field-links button:hover, .chapter-text-action:hover, .chapter-footer a:hover { text-decoration: underline; text-underline-offset: .2em; }
+.school-layout {
+  display: grid;
+  grid-template-columns: minmax(0,.94fr) minmax(0,1fr);
+  gap: clamp(2rem,6vw,6.5rem);
+  align-items: stretch;
+}
+.school-portrait { position: relative; isolation: isolate; overflow: hidden; min-height: 28rem; display: grid; align-items: end; padding: clamp(1.5rem,3.5vw,4rem); }
+.school-portrait img, .school-portrait::after { position: absolute; inset: 0; width: 100%; height: 100%; }
+.school-portrait img { z-index: -2; object-fit: cover; object-position: 47% center; }
+.school-portrait::after { content: ''; z-index: -1; background: linear-gradient(0deg, rgb(3 18 29 / 94%), transparent 80%); }
+.school-portrait h2 { color: #fff6e4; }
+.school-course { align-self: center; }
+.school-intro { color: var(--chapter-ink); font-size: clamp(1.15rem,1.85vw,1.8rem); font-weight: 600; letter-spacing: -.035em; line-height: 1.36; }
+.course-list { list-style: none; margin: 1.65rem 0; padding: 0; border-top: 1px solid #c8bbab; }
+.course-list li { border-bottom: 1px solid #c8bbab; }
+.course-list summary { gap: .85rem; min-height: 3.95rem; line-height: 1.25; font-size: clamp(.94rem,1.2vw,1.18rem); font-weight: 700; }
+.course-list summary > svg { margin-left: auto; }
+.course-number { color: #945119; font-size: .83rem; font-variant-numeric: tabular-nums; width: 1.5rem; flex: none; }
+.course-detail { padding: 0 1rem 1.35rem 2.35rem; font-size: .89rem; line-height: 1.55; color: var(--chapter-shadow); }
+.course-detail p + p { margin-top: .62rem; font-size: .8rem; font-weight: 650; }
+.school-live { display: flex; gap: .8rem; }
+.school-live > svg { color: #92521b; flex: none; margin-top: .2rem; }
+.chapter-text-action { min-height: 2.75rem; margin-top: 1rem; font-size: .88rem; font-weight: 750; cursor: pointer; }
+.movement-site #cruzadas.chapter-rally { color: #122231; background: #ffbd58; }
+.rally-place { display: flex; justify-content: space-between; gap: 1rem; font-size: .87rem; font-weight: 650; padding-bottom: 1rem; border-bottom: 1px solid #a97633; }
+.rally-bill {
+  display: grid; grid-template-columns: minmax(0,1.3fr) minmax(0,.7fr);
+  align-items: center; gap: 2.5rem;
+  padding: clamp(2rem,5.5vw,5.5rem) 0;
+}
+.movement-site #cruzadas .chapter-title { max-width: 13ch; font-size: clamp(2.8rem,6.4vw,6.5rem); }
+.rally-date { justify-self: end; text-align: right; }
+.rally-date > div { font-size: clamp(3.7rem,7.6vw,7.8rem); line-height: .95; font-weight: 680; letter-spacing: -.09em; white-space: nowrap; }
+.rally-date > div > span { font-weight: 380; }
+.rally-date p { margin-top: .7rem; font-size: .82rem; font-weight: 600; }
+.rally-details { padding-top: 1.3rem; border-top: 1px solid #a97633; }
+.rally-details p { color: #372b1f; }
+.contact-layout { align-items: center; }
+.movement-site #contato .chapter-title { margin: 0; }
+.contact-channels { border-top: 1px solid #b5ad9f; }
+.contact-channels a { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: .9rem; min-height: 4.2rem; border-bottom: 1px solid #b5ad9f; font-size: clamp(.85rem,1.35vw,1.25rem); font-weight: 650; }
+.contact-channels a span { overflow-wrap: anywhere; }
+.contact-channels a:hover { color: #85480f; }
+.chapter-footer { color: #f8f3e8; background: var(--navy); padding: 2.1rem 0; }
+.footer-layout { display: flex; align-items: center; justify-content: space-between; gap: 1.4rem; }
+.footer-layout p, .chapter-footer a { font-size: .83rem; font-weight: 600; }
+.footer-layout small { color: #c2cfd3; font-size: .75rem; }
+.chapter-footer a { color: var(--gold); min-height: 2.75rem; }
+@media (max-width: 759px) {
+  .chapter-wrap { width: min(calc(100% - 2.5rem),36rem); }
+  .field-directory, .purpose-opening, .contact-layout, .school-layout, .rally-bill { grid-template-columns: 1fr; }
+  .field-directory, .school-layout, .contact-layout { gap: 2.25rem; }
+  .purpose-disciplines,.rally-details { grid-template-columns: 1fr; gap: 1.35rem; }
+  .purpose-disciplines article { display: grid; grid-template-columns: 1.6rem 1fr; column-gap: .8rem; }
+  .purpose-disciplines svg { margin: .12rem 0 0; }
+  .purpose-disciplines p { grid-column: 2; }
+  .school-portrait { min-height: 20rem; }
+  .rally-bill { gap: 1.8rem; }
+  .rally-date { justify-self: start; text-align: left; }
+  .rally-date > div { display: none; }
+  .rally-date p { font-size: 1rem; margin: 0; }
+  .footer-layout { flex-direction: column; align-items: flex-start; }
+}

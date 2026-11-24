@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useLayoutEffect, useState } from 'react';
 import { AuthProvider, useAuth } from './context/AuthContext.tsx';
 import { Sidebar } from './components/layout/Sidebar.tsx';
 import { Header } from './components/layout/Header.tsx';
@@ -10,13 +10,45 @@ import { ReportsModule } from './components/admin/ReportsModule.tsx';
 import { LoginView } from './components/auth/LoginView.tsx';
 import { AIAnalysisModal } from './components/admin/AIAnalysisModal.tsx';
 
+type View = 'public' | 'admin';
+
+function viewFromUrl(): View {
+  return new URLSearchParams(window.location.search).get('view') === 'public' ? 'public' : 'admin';
+}
+
 function MainApp() {
-  const [currentView, setCurrentView] = useState<'public' | 'admin'>('admin');
+  const [currentView, setCurrentView] = useState<View>(viewFromUrl);
   const [currentTab, setCurrentTab] = useState<string>('dashboard');
   const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(false);
   const [isAIModalOpen, setIsAIModalOpen] = useState<boolean>(false);
 
   const { currentUser, isLoading } = useAuth();
+
+  useLayoutEffect(() => {
+    const onPopState = () => setCurrentView(viewFromUrl());
+    window.addEventListener('popstate', onPopState);
+    return () => window.removeEventListener('popstate', onPopState);
+  }, []);
+
+  useLayoutEffect(() => {
+    if (isLoading) return;
+    const targetId = currentView === 'public' && window.location.hash.slice(1);
+    const target = targetId && document.getElementById(targetId);
+    if (target) {
+      target.scrollIntoView({ behavior: 'instant', block: 'start' });
+    } else {
+      window.scrollTo({ top: 0, behavior: 'instant' });
+    }
+  }, [currentView, isLoading]);
+
+  function navigateTo(view: View) {
+    const url = new URL(window.location.href);
+    if (view === 'public') url.searchParams.set('view', 'public');
+    else url.searchParams.delete('view');
+    url.hash = '';
+    window.history.pushState(null, '', url);
+    setCurrentView(view);
+  }
 
   if (isLoading) {
     return (
@@ -33,13 +65,13 @@ function MainApp() {
 
   if (currentView === 'public') {
     return (
-      <InstitutionalLanding onEnterPortal={() => setCurrentView('admin')} />
+      <InstitutionalLanding onEnterPortal={() => navigateTo('admin')} />
     );
   }
 
   if (!currentUser) {
     return (
-      <LoginView onBackToPublic={() => setCurrentView('public')} />
+      <LoginView onBackToPublic={() => navigateTo('public')} />
     );
   }
 
@@ -85,7 +117,7 @@ function MainApp() {
           onToggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)}
           title={currentMeta.title}
           subtitle={currentMeta.subtitle}
-          onGoToPublicSite={() => setCurrentView('public')}
+          onGoToPublicSite={() => navigateTo('public')}
         />
 
         {/* Tab Viewport */}

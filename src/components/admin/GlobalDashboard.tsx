@@ -76,18 +76,12 @@ export const GlobalDashboard: React.FC<GlobalDashboardProps> = ({
   return (
     <div className="p-4 sm:p-6 lg:p-8 space-y-6 max-w-7xl mx-auto">
       {/* Operational Command Banner (Official Report Reach Block Style) */}
-      <div className="bg-[#061A2D] rounded-2xl p-6 sm:p-7 text-white border border-[#16324F] border-l-4 border-l-[#ED801F] flex flex-col md:flex-row items-start md:items-center justify-between gap-5">
+      <div className="leadership-overview py-6 sm:py-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-5">
         <div>
-          <div className="flex items-center gap-2.5 mb-2">
-            <span className="px-2.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-[#0A3D69] text-[#FFBD58] border border-[#234F7A]">
-              Governança Ministerial
-            </span>
-            <span className="text-[11px] text-[#B7C8D9]">Base de dados em tempo real</span>
-          </div>
-          <h2 className="text-xl sm:text-2xl font-extrabold tracking-tight text-white">
+          <h2 className="text-2xl sm:text-4xl font-extrabold tracking-tight text-[#061A2D]">
             Painel Geral de Supervisão Ministerial
           </h2>
-          <p className="text-xs sm:text-sm text-[#DAE4ED] mt-1.5 max-w-2xl leading-relaxed">
+          <p className="text-sm text-[#586E84] mt-3 max-w-2xl leading-relaxed">
             Acompanhamento centralizado das regionais, evangelismos, relatórios bimestrais e
             consolidação executiva dos Semeadores de Fogo Global.
           </p>
@@ -96,9 +90,9 @@ export const GlobalDashboard: React.FC<GlobalDashboardProps> = ({
         {isAdmin && (
           <button
             onClick={onOpenAIModal}
-            className="px-5 py-2.5 bg-[#FFBD58] hover:bg-[#f5b042] text-[#061A2D] rounded-xl text-xs font-extrabold transition-colors flex items-center gap-2 shrink-0 cursor-pointer shadow-xs"
+            className="px-5 py-3 bg-[#061A2D] hover:bg-[#0A3D69] text-white rounded-md text-xs font-extrabold transition-colors flex items-center gap-2 shrink-0 cursor-pointer shadow-xs"
           >
-            <Sparkles className="w-4 h-4 text-[#061A2D]" />
+            <Sparkles className="w-4 h-4 text-[#FFBD58]" />
             <span>Diagnóstico IA dos Relatórios</span>
           </button>
         )}
