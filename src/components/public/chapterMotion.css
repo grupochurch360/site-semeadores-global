@@ -60,13 +60,9 @@
       display:block; position:absolute; inset:0; z-index:-2; background-size:cover;
       animation:mission-splice linear both; animation-timeline:--mission-scenes;
     }
-    .mission-shot.congregation {
-      background-image:url('/acervo/encontro.webp'); background-position:center;
-      animation-range:contain 6% contain 35%;
-    }
-    .mission-shot.prayer {
-      background-image:url('/acervo/oracao.webp'); background-position:40% 36%;
-      animation-range:contain 54% contain 82%;
+    .mission-sequence .mission-shot {
+      background-image:url('/acervo/comunidade-na-quadra.webp'); background-position:50% 68%;
+      animation-range:contain 30% contain 67%;
     }
     @media(min-width:701px) { .mission-shot { left:37%; } }
     @media(max-width:699px) and (min-height:520px) {
