@@ -119,14 +119,7 @@
   .mission-hero .street-title span { font-size:clamp(3.2rem,5.5vw,9rem); }
   .mission-hero .street-title em { font-size:clamp(3rem,4.8vw,7rem); }
   .desktop-blessing {
-    grid-area:1 / 2; display:block; position:relative; overflow:hidden; isolation:isolate;
-    --blessing:url('/acervo/bencao-noturna.webp');
-    background:#071923;
-  }
-  .desktop-blessing::before, .desktop-blessing::after {
-    content:''; position:absolute; inset:0; background:var(--blessing) center / contain no-repeat;
-  }
-  .desktop-blessing::before {
-    inset:-24px; background-size:cover; filter:blur(20px) brightness(.67);
+    grid-area:1 / 2; display:block;
+    background:#071923 url('/acervo/bencao-noturna.webp') left top / cover no-repeat;
   }
 }

@@ -33,7 +33,7 @@ for (const width of [360, 768]) {
   });
 }
 for (const width of [1024, 1920, 2560]) {
-  test('desktop exibe a fotografia inteira a ' + width + 'px', async ({ page }) => {
+  test('desktop preenche o bloco e preserva a borda esquerda a ' + width + 'px', async ({ page }) => {
     await page.setViewportSize({width, height:900});
     await page.goto('/');
     const photo = page.locator('.desktop-blessing');
@@ -44,8 +44,9 @@ for (const width of [1024, 1920, 2560]) {
     expect(Math.abs(panel.width - bounds.x)).toBeLessThan(1);
     expect(Math.abs(panel.height - bounds.height)).toBeLessThan(1);
     expect(Math.abs(bounds.y + bounds.height - 900)).toBeLessThanOrEqual(2);
-    expect(await photo.evaluate(el => getComputedStyle(el, '::after').backgroundSize)).toBe('contain');
-    expect(await photo.evaluate(el => getComputedStyle(el, '::after').backgroundImage)).toContain('bencao-noturna.webp');
+    await expect(photo).toHaveCSS('background-size', 'cover');
+    await expect(photo).toHaveCSS('background-position', '0% 0%');
+    expect(await photo.evaluate(el => getComputedStyle(el).backgroundImage)).toContain('bencao-noturna.webp');
     await expect(page.locator('.mission-photos')).toBeHidden();
   });
 }
