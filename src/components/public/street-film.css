@@ -105,13 +105,21 @@
 .desktop-blessing { display:none; }
 @media (min-width:1024px) {
   .movement-site .mission-hero { height:auto; }
-  .movement-site .mission-hero .street-stage { position:relative; top:auto; height:auto; aspect-ratio:1672 / 941; }
-  .mission-hero .mission-photos, .mission-hero .street-progress { display:none; }
+  .movement-site .mission-hero .street-stage {
+    position:relative; top:auto; height:auto;
+    grid-template-columns:minmax(0,36fr) minmax(0,64fr);
+  }
+  .mission-hero :is(.mission-photos,.street-progress,.street-shade) { display:none; }
+  .mission-hero .street-layout {
+    grid-area:1 / 1; align-items:center;
+    padding:clamp(1.25rem,2.6vw,4rem);
+    background:#071923; border-right:2px solid #c79c58;
+  }
+  .mission-hero .street-copy { width:100%; min-width:0; }
+  .mission-hero .street-title span { font-size:clamp(3.2rem,5.5vw,9rem); }
+  .mission-hero .street-title em { font-size:clamp(3rem,4.8vw,7rem); }
   .desktop-blessing {
-    display:block;
-    position:absolute;
-    inset:0;
-    z-index:-3;
-    background: #071923 url('/acervo/bencao-noturna.webp') center / cover no-repeat;
+    grid-area:1 / 2; display:block; width:100%; aspect-ratio:1672 / 941;
+    background:#071923 url('/acervo/bencao-noturna.webp') center / cover no-repeat;
   }
 }

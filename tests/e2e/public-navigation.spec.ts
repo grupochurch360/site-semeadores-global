@@ -39,6 +39,10 @@ for (const width of [1024, 1920, 2560]) {
     const photo = page.locator('.desktop-blessing');
     await expect(photo).toBeVisible();
     const bounds = (await photo.boundingBox())!;
+    const panel = (await page.locator('.street-layout').boundingBox())!;
+    expect(panel.x).toBe(0);
+    expect(Math.abs(panel.width - bounds.x)).toBeLessThan(1);
+    expect(Math.abs(panel.height - bounds.height)).toBeLessThan(1);
     expect(Math.abs(bounds.height - bounds.width * 941 / 1672)).toBeLessThan(1);
     await expect(photo).toHaveCSS('background-size', 'cover');
     await expect(photo).toHaveCSS('background-image', /bencao-noturna.webp/);
