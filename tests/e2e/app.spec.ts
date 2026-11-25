@@ -7,7 +7,7 @@ test.describe('Semeadores de Fogo Global — Autenticação, Menu Limpo e Isolam
     await expect(page.getByLabel('E-mail Ministerial')).toBeVisible();
 
     await page.getByRole('button', { name: 'Voltar ao Site Público' }).click();
-    await expect(page.getByText('Semeadores de Fogo').first()).toBeVisible();
+    await expect(page.getByRole('heading',{name:'Site em manutenção'})).toBeVisible();
   });
 
   test('login como Direção Global exibe apenas os módulos essenciais no menu lateral', async ({ page }) => {

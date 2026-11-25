@@ -118,7 +118,7 @@ export function getBimesterDateRange(
 }
 
 async function ensureSeededPasswords() {
-  if (storage.isUsingSupabase()) return;
+  if (storage.isUsingSupabase() || process.env.VERCEL || process.env.NODE_ENV==='production') return;
   const defaultPassword = process.env.DEFAULT_DEV_PASSWORD || 'Semeadores@2026';
   const users = await storage.getAll('users');
   let changed = false;

@@ -13,6 +13,7 @@ const roles: Record<RoleType, string> = {
 };
 export function OwnerSettings() {
   const { currentUser, logout } = useAuth();
+  const [search,setSearch]=useState('');
   const [users, setUsers] = useState<User[]>([]);
   const [regions, setRegions] = useState<Region[]>([]);
   const [editing, setEditing] = useState<User | null>(null);
@@ -103,9 +104,9 @@ export function OwnerSettings() {
     }
   }
   return (
-    <main className="mx-auto max-w-4xl p-4 sm:p-8 text-slate-900">
-      <header className="mb-6 flex flex-wrap items-center justify-between gap-3">
-        <h1 className="text-2xl font-bold">Configuração administrativa</h1>
+    <main className="mx-auto min-h-dvh max-w-5xl bg-slate-50 p-4 sm:p-8 text-slate-900">
+      <header className="mb-4 flex flex-wrap items-center justify-between gap-3 rounded-2xl border-l-4 border-amber-400 bg-[#071923] p-6 text-white">
+        <h1 className="text-2xl font-bold sm:text-3xl">Gestão de usuários</h1>
         <button
           onClick={() => void logout()}
           className="rounded border px-4 py-2"
@@ -120,7 +121,7 @@ export function OwnerSettings() {
         </p>
       ) : (
         <>
-          <a href="/admin" className="underline">
+          <a href="/" className="underline">
             Abrir painel administrativo
           </a>
           <p role="status" className="my-3">
@@ -131,7 +132,7 @@ export function OwnerSettings() {
               <form
                 key={version}
                 onSubmit={save}
-                className="grid gap-4 rounded-xl border bg-white p-5 sm:grid-cols-2 [&_input:not([type=checkbox])]:w-full [&_input]:rounded [&_input]:border [&_input]:p-2 [&_select]:w-full [&_select]:rounded [&_select]:border [&_select]:p-2"
+                className="grid gap-4 rounded-xl border border-slate-200 bg-white p-5 shadow-sm sm:grid-cols-2 [&_input:not([type=checkbox])]:w-full [&_input]:rounded [&_input]:border [&_input]:p-2 [&_select]:w-full [&_select]:rounded [&_select]:border [&_select]:p-2"
               >
                 <h2 className="text-lg font-bold sm:col-span-2">
                   {editing ? 'Editar conta' : 'Nova conta'}
@@ -224,10 +225,13 @@ export function OwnerSettings() {
               <h2 className="mt-8 text-lg font-bold">
                 Usuários ({users.length})
               </h2>
-              {users.map((u) => (
+              <label className="mt-4 block text-sm font-semibold">Buscar usuário
+                <input type="search" value={search} onChange={e=>setSearch(e.target.value)} placeholder="Nome, e-mail ou perfil" className="mt-1 mb-3 block w-full rounded-lg border border-slate-300 bg-white px-4 py-3" />
+              </label>
+              {users.filter(u=>[u.name,u.email,roles[u.role]].join(' ').toLocaleLowerCase().includes(search.trim().toLocaleLowerCase())).map((u) => (
                 <article
                   key={u.id}
-                  className="flex flex-wrap items-center justify-between gap-3 border-b py-4"
+                  className="mb-2 flex flex-wrap items-center justify-between gap-3 rounded-lg border border-slate-200 bg-white px-4 py-3"
                 >
                   <div className="min-w-0 break-words">
                     <strong>{u.name}</strong>

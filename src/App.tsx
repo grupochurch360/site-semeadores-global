@@ -2,7 +2,7 @@ import React, { useLayoutEffect, useState } from 'react';
 import { AuthProvider, useAuth } from './context/AuthContext.tsx';
 import { Sidebar } from './components/layout/Sidebar.tsx';
 import { Header } from './components/layout/Header.tsx';
-import { InstitutionalLanding } from './components/public/InstitutionalLanding.tsx';
+import { BrandLogo } from './components/common/BrandLogo';
 import { GlobalDashboard } from './components/admin/GlobalDashboard.tsx';
 import { RegionsModule } from './components/admin/RegionsModule.tsx';
 import { EvangelismsModule } from './components/admin/EvangelismsModule.tsx';
@@ -16,7 +16,7 @@ type View = 'public' | 'admin' | 'owner';
 
 function viewFromUrl(): View {
   if (/^\/(?:admin\/config|config-admin)\/?$/.test(window.location.pathname)) return 'owner';
-  return /^\/admin\/?$/.test(window.location.pathname) ? 'admin' : 'public';
+  return /^\/manutencao\/?$/.test(window.location.pathname) ? 'public' : 'admin';
 }
 
 function MainApp() {
@@ -46,7 +46,7 @@ function MainApp() {
 
   function navigateTo(view: View) {
     const url = new URL(window.location.href);
-    url.pathname = view === 'admin' ? '/admin' : '/';
+    url.pathname = view === 'public' ? '/manutencao' : '/';
     url.searchParams.delete('view');
     url.hash = '';
     window.history.pushState(null, '', url);
@@ -68,7 +68,14 @@ function MainApp() {
 
   if (currentView === 'public') {
     return (
-      <InstitutionalLanding />
+      <main className="grid min-h-dvh place-items-center bg-[#071923] px-6 text-white">
+        <section className="w-full max-w-xl border-l-2 border-amber-400 pl-7">
+          <BrandLogo variant="white" showSubtitle={false} />
+          <h1 className="mt-10 text-4xl font-bold">Site em manutenção</h1>
+          <p className="mt-3 text-slate-200">Estamos preparando a apresentação dos Semeadores de Fogo.</p>
+          <a href="/" className="mt-8 inline-block rounded bg-amber-300 px-5 py-3 font-semibold text-slate-950">Acessar painel</a>
+        </section>
+      </main>
     );
   }
 
