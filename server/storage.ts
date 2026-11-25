@@ -4,6 +4,18 @@ import { getSupabaseAdmin, isSupabaseConfigured } from './supabase.ts';
 
 export type CollectionKey = keyof DatabaseSchema;
 
+function clientFor(key: CollectionKey) {
+  if (process.env.SUPABASE_ACCOUNTS_ONLY === 'true' && !['users', 'regions', 'audit_logs'].includes(key)) {
+    return null;
+  }
+  return getSupabaseAdmin();
+}
+
+function convertRow(row: Record<string, unknown>, rename: (name: string) => string) {
+  return Object.fromEntries(Object.entries(row).map(([name, value]) => [rename(name), value]));
+}
+
+
 /**
  * Unified storage gateway:
  * - Uses Supabase PostgreSQL when SUPABASE_URL & SUPABASE_SERVICE_ROLE_KEY are configured.
@@ -15,16 +27,21 @@ export class StorageRepository {
   }
 
   public async getAll<K extends CollectionKey>(key: K): Promise<DatabaseSchema[K]> {
-    const supabase = getSupabaseAdmin();
+    const supabase = clientFor(key);
     if (supabase) {
       const { data, error } = await supabase.from(key).select('*');
-      if (key==='users' && error) throw new Error('Falha ao consultar contas');
+      if (error && (key === 'users' || (key === 'regions' && process.env.SUPABASE_ACCOUNTS_ONLY === 'true'))) {
+        throw new Error('Falha ao consultar ' + key);
+      }
       if (key==='users' && data) return data.map(row=>({
         id:row.id,name:row.name,email:row.email,role:row.role,active:row.active,
         regionId:row.region_id,departmentId:row.department_id,phone:row.phone,avatar:row.avatar,
         passwordHash:row.password_hash,authUserId:row.auth_user_id
       })) as DatabaseSchema[K];
       if (!error && Array.isArray(data)) {
+        if (key === 'regions' || key === 'audit_logs') {
+          return data.map(row => convertRow(row, name => name.replace(/_([a-z])/g, (_, letter) => letter.toUpperCase()))) as unknown as DatabaseSchema[K];
+        }
         return data as unknown as DatabaseSchema[K];
       }
       console.error(`[Supabase] Fallback local ao ler ${key}:`, error?.message);
@@ -33,11 +50,15 @@ export class StorageRepository {
   }
 
   public async saveAll<K extends CollectionKey>(key: K, value: DatabaseSchema[K]): Promise<void> {
-    const supabase = getSupabaseAdmin();
+    const supabase = clientFor(key);
     if (supabase) {
       if (Array.isArray(value) && value.length > 0) {
-        const { error } = await supabase.from(key).upsert(value as unknown as Record<string, unknown>[]);
+        const rows = value as unknown as Record<string, unknown>[];
+        const { error } = await supabase.from(key).upsert(
+          key === 'regions' ? rows.map(row => convertRow(row, name => name.replace(/[A-Z]/g, letter => '_' + letter.toLowerCase()))) : rows
+        );
         if (error) {
+          if (key === 'regions') throw new Error('Falha ao gravar regionais');
           console.error(`[Supabase] Erro ao sincronizar ${key}:`, error.message);
         }
       }
@@ -61,7 +82,7 @@ export class StorageRepository {
   }
 
   public async deleteById(key: CollectionKey, id: string): Promise<void> {
-    const supabase = getSupabaseAdmin();
+    const supabase = clientFor(key);
     if (supabase) {
       const { error } = await supabase.from(key).delete().eq('id', id);
       if (error) {

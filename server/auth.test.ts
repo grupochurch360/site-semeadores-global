@@ -289,3 +289,32 @@ test('API enforces auth, rate limiting, user deactivation, LGPD erasure, regiona
     }
   }
 });
+
+test('account storage leaves operational collections in place and maps region rows', async () => {
+  const { createServer } = await import('node:http');
+  const { StorageRepository } = await import('./storage.ts');
+  const paths: string[] = [];
+  const server = createServer((req, res) => {
+    const path = new URL(req.url!, 'http://localhost').pathname;
+    paths.push(path);
+    res.setHeader('Content-Type', 'application/json');
+    res.end(JSON.stringify(path.endsWith('/regions') ? [{ id: 'reg-test', church_name: 'Igreja Teste' }] : []));
+  });
+  await new Promise<void>(resolve => server.listen(0, '127.0.0.1', resolve));
+  const saved = { ...process.env };
+  try {
+    process.env.SUPABASE_URL = 'http://127.0.0.1:' + (server.address() as AddressInfo).port;
+    process.env.SUPABASE_SERVICE_ROLE_KEY = 'local-test-key';
+    process.env.SUPABASE_ACCOUNTS_ONLY = 'true';
+    const storage = new StorageRepository();
+    assert.deepEqual(await storage.getAll('bimonthly_reports'), db.get('bimonthly_reports'));
+    assert.equal((await storage.getAll('regions'))[0].churchName, 'Igreja Teste');
+    assert.deepEqual(paths, ['/rest/v1/regions']);
+  } finally {
+    for (const name of ['SUPABASE_URL', 'SUPABASE_SERVICE_ROLE_KEY', 'SUPABASE_ACCOUNTS_ONLY']) {
+      if (saved[name] === undefined) delete process.env[name];
+      else process.env[name] = saved[name];
+    }
+    await new Promise<void>(resolve => server.close(() => resolve()));
+  }
+});
