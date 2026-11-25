@@ -7,11 +7,8 @@ function getSessionSecret(): string {
   if (process.env.SESSION_SECRET) {
     return process.env.SESSION_SECRET;
   }
-  if (process.env.NODE_ENV === 'production' && !process.env.VERCEL) {
-    throw new Error('SESSION_SECRET é obrigatório em ambiente de produção');
-  }
-  if (process.env.NODE_ENV === 'production') {
-    console.warn('[Auth] AVISO: SESSION_SECRET não definida na Vercel; configure-a em Environment Variables.');
+  if (process.env.NODE_ENV === 'production' || process.env.VERCEL) {
+    throw new Error('SESSION_SECRET é obrigatório em produção');
   }
   return 'sfg-dev-secret-change-in-production';
 }

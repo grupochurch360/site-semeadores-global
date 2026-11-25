@@ -1,3 +1,4 @@
+import type { User } from '../src/types/index.ts';
 import { db, type DatabaseSchema } from './db.ts';
 import { getSupabaseAdmin, isSupabaseConfigured } from './supabase.ts';
 
@@ -17,6 +18,12 @@ export class StorageRepository {
     const supabase = getSupabaseAdmin();
     if (supabase) {
       const { data, error } = await supabase.from(key).select('*');
+      if (key==='users' && error) throw new Error('Falha ao consultar contas');
+      if (key==='users' && data) return data.map(row=>({
+        id:row.id,name:row.name,email:row.email,role:row.role,active:row.active,
+        regionId:row.region_id,departmentId:row.department_id,phone:row.phone,avatar:row.avatar,
+        passwordHash:row.password_hash,authUserId:row.auth_user_id
+      })) as DatabaseSchema[K];
       if (!error && Array.isArray(data)) {
         return data as unknown as DatabaseSchema[K];
       }
@@ -39,11 +46,26 @@ export class StorageRepository {
     db.set(key, value);
   }
 
+  public async writeUser(user:User, create:boolean) {
+    const client=getSupabaseAdmin();
+    if(client){
+      const row={id:user.id,name:user.name,email:user.email,role:user.role,region_id:user.regionId??null,department_id:user.departmentId??null,phone:user.phone??null,active:user.active,password_hash:user.passwordHash};
+      const query=create ? client.from('users').insert(row) : client.from('users').update(row).eq('id',user.id);
+      const {error}=await query.select('id').single();
+      if(error) throw new Error('Não foi possível gravar a conta.');
+      return;
+    }
+    const users=db.get('users');
+    if(users.some(u=>u.id!==user.id && u.email.toLowerCase()===user.email.toLowerCase())) throw new Error('E-mail já cadastrado');
+    db.set('users',create?[...users,user]:users.map(u=>u.id===user.id?user:u));
+  }
+
   public async deleteById(key: CollectionKey, id: string): Promise<void> {
     const supabase = getSupabaseAdmin();
     if (supabase) {
       const { error } = await supabase.from(key).delete().eq('id', id);
       if (error) {
+        if(key==="users") throw new Error("Falha ao excluir a conta");
         console.error(`[Supabase] Erro ao excluir ${key}/${id}:`, error.message);
       }
       return;

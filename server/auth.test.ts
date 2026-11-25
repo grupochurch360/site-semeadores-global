@@ -141,10 +141,20 @@ test('API enforces auth, rate limiting, user deactivation, LGPD erasure, regiona
     const adminData = (await loginAdminRes.json()) as { token: string };
     const adminHeaders = { Authorization: `Bearer ${adminData.token}`, 'Content-Type': 'application/json' };
 
+    const denied = await fetch(baseUrl+'/api/config-admin/users',{headers:adminHeaders});
+    assert.equal(denied.status,403);
+    assert.equal((await fetch(baseUrl+'/api/config-admin/users')).status,401);
+    const ownerPassword = 'TemporaryFixtureOnlyA7';
+    process.env.OWNER_EMAIL = 'owner@example.test';
+    process.env.OWNER_PASSWORD_HASH = hashPassword(ownerPassword);
+    const ownerLogin = await fetch(baseUrl+'/api/auth/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:process.env.OWNER_EMAIL,password:ownerPassword})});
+    assert.equal(ownerLogin.status,200);
+    const ownerHeaders = {...adminHeaders,Authorization:'Bearer '+(await ownerLogin.json()).token};
+    assert.equal((await fetch(baseUrl+'/api/config-admin/users',{headers:ownerHeaders})).status,200);
     // 8. Zod validation rejects invalid user payload
     const badUserRes = await fetch(`${baseUrl}/api/users`, {
       method: 'POST',
-      headers: adminHeaders,
+      headers: ownerHeaders,
       body: JSON.stringify({ name: 'A', email: 'invalido', password: '123', role: 'global_admin' }),
     });
     assert.equal(badUserRes.status, 400);
@@ -152,7 +162,7 @@ test('API enforces auth, rate limiting, user deactivation, LGPD erasure, regiona
     // 9. Create + deactivate user immediately invalidates their token
     const newUserRes = await fetch(`${baseUrl}/api/users`, {
       method: 'POST',
-      headers: adminHeaders,
+      headers: ownerHeaders,
       body: JSON.stringify({
         name: 'Líder Temporário',
         email: 'temp.lider@semeadoresdefogo.org',
@@ -172,9 +182,12 @@ test('API enforces auth, rate limiting, user deactivation, LGPD erasure, regiona
     assert.equal(tempLoginRes.status, 200);
     const tempLogin = (await tempLoginRes.json()) as { token: string };
 
+    const edited = await fetch(baseUrl+'/api/users/'+tempUser.id,{method:'PUT',headers:ownerHeaders,body:JSON.stringify({name:'Pessoa atualizada',role:'media_team'})});
+    assert.equal(edited.status,200);
+    assert.equal((await edited.json()).role,'media_team');
     const deactivateRes = await fetch(`${baseUrl}/api/users/${tempUser.id}`, {
       method: 'DELETE',
-      headers: adminHeaders,
+      headers: ownerHeaders,
     });
     assert.equal(deactivateRes.status, 200);
 

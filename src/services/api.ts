@@ -73,6 +73,9 @@ class ApiService {
     return this.request('/api/auth/me');
   }
 
+  getManagedUsers():Promise<User[]> { return this.request('/api/config-admin/users'); }
+  deleteUser(id:string) { return this.request('/api/users/'+encodeURIComponent(id),{method:'DELETE'}); }
+
   async getUsers(): Promise<User[]> {
     return this.request('/api/users');
   }
@@ -161,7 +164,7 @@ class ApiService {
     success: boolean;
     id: string;
     provider: string;
-    reportData: any;
+    reportData: import('../../server/reportTemplate').StructuredReportData;
     html: string;
     analysis: string;
     analyzedReportsCount: number;

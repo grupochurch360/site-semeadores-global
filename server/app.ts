@@ -1,3 +1,6 @@
+import 'express-async-errors';
+import { randomUUID } from 'node:crypto';
+import {ownerAccount,ownerId,ownerToken,verifyOwnerToken} from './owner.ts';
 import express, { type Request, type Response, type NextFunction } from 'express';
 import dotenv from 'dotenv';
 import { GoogleGenAI, ThinkingLevel } from '@google/genai';
@@ -115,6 +118,7 @@ export function getBimesterDateRange(
 }
 
 async function ensureSeededPasswords() {
+  if (storage.isUsingSupabase()) return;
   const defaultPassword = process.env.DEFAULT_DEV_PASSWORD || 'Semeadores@2026';
   const users = await storage.getAll('users');
   let changed = false;
@@ -134,7 +138,7 @@ async function ensureSeededPasswords() {
 }
 
 export function createApp(options?: { loginMaxAttempts?: number; useLiveAI?: boolean }) {
-  void ensureSeededPasswords();
+  void ensureSeededPasswords().catch(() => console.error("Não foi possível preparar os usuários locais."));
 
   const app = express();
   const loginLimiter = new LoginRateLimiter(options?.loginMaxAttempts ?? 10, 15 * 60 * 1000);
@@ -171,11 +175,12 @@ export function createApp(options?: { loginMaxAttempts?: number; useLiveAI?: boo
   }
 
   async function resolveUserFromToken(token: string): Promise<User | null> {
+    if (token.startsWith('owner.')) return verifyOwnerToken(token);
     const payload = verifySessionToken(token);
     if (payload) {
       const users = await storage.getAll('users');
       const found = users.find((u) => u.id === payload.sub);
-      return found && found.active !== false ? found : null;
+      return found && found.id !== ownerId && found.active !== false ? found : null;
     }
 
     const supabase = getSupabaseAdmin();
@@ -183,8 +188,8 @@ export function createApp(options?: { loginMaxAttempts?: number; useLiveAI?: boo
       const { data, error } = await supabase.auth.getUser(token);
       if (!error && data.user?.email) {
         const users = await storage.getAll('users');
-        const found = users.find((u) => u.email.toLowerCase() === data.user!.email!.toLowerCase());
-        return found && found.active !== false ? found : null;
+        const found = users.find((u) => u.authUserId === data.user!.id);
+        return found && found.id !== ownerId && found.active !== false ? found : null;
       }
     }
     return null;
@@ -256,6 +261,15 @@ export function createApp(options?: { loginMaxAttempts?: number; useLiveAI?: boo
       });
     }
 
+    const owner = ownerAccount();
+    if (owner && emailKey === owner.email) {
+      if (!verifyPassword(data.password, owner.passwordHash!)) {
+        loginLimiter.recordFailure(rateKey);
+        return res.status(401).json({error:'E-mail ou senha inválidos'});
+      }
+      loginLimiter.clear(rateKey);
+      return res.json({success:true,token:ownerToken(owner),user:sanitizeUser(owner)});
+    }
     await ensureSeededPasswords();
     const users = await storage.getAll('users');
     const target = users.find((u) => u.email.toLowerCase() === emailKey);
@@ -309,8 +323,7 @@ export function createApp(options?: { loginMaxAttempts?: number; useLiveAI?: boo
       return res.status(404).json({ error: 'Usuário não encontrado' });
     }
 
-    users[index].passwordHash = hashPassword(data.newPassword);
-    await storage.saveAll('users', users);
+    await storage.writeUser({...users[index],passwordHash:hashPassword(data.newPassword)},false);
     await storage.logAudit(user.id, user.name, 'CHANGE_PASSWORD', 'users', user.id, 'Senha alterada pelo próprio usuário', user.regionId);
     res.json({ success: true });
   });
@@ -333,7 +346,16 @@ export function createApp(options?: { loginMaxAttempts?: number; useLiveAI?: boo
     return res.status(403).json({ error: 'Sem permissão para listar usuários' });
   });
 
-  app.post('/api/users', requireAuth, requireAdmin, async (req: AuthenticatedRequest, res: Response) => {
+  function requireOwner(req: AuthenticatedRequest, res: Response, next: NextFunction) {
+    if (req.user?.id !== ownerId) return res.status(403).json({error:'Acesso exclusivo do proprietário.'});
+    if (process.env.VERCEL && !storage.isUsingSupabase()) return res.status(503).json({error:'Configure o banco persistente antes de gerenciar contas.'});
+    next();
+  }
+
+  app.get('/api/config-admin/users',requireAuth,requireOwner,async (_req,res)=>{
+    res.json((await storage.getAll('users')).map(sanitizeUser));
+  });
+  app.post('/api/users', requireAuth, requireOwner, async (req: AuthenticatedRequest, res: Response) => {
     const admin = req.user!;
     const data = parseBody(createUserSchema, req.body, res);
     if (!data) return;
@@ -343,12 +365,12 @@ export function createApp(options?: { loginMaxAttempts?: number; useLiveAI?: boo
     }
 
     const users = await storage.getAll('users');
-    if (users.some((u) => u.email.toLowerCase() === data.email.toLowerCase())) {
+    if (data.email.toLowerCase() === ownerAccount()?.email || users.some((u) => u.email.toLowerCase() === data.email.toLowerCase())) {
       return res.status(409).json({ error: 'Já existe um usuário cadastrado com este email' });
     }
 
     const newUser: User = {
-      id: `usr-${Date.now().toString(36)}`,
+      id: 'usr-'+randomUUID(),
       name: data.name,
       email: data.email.toLowerCase(),
       role: data.role,
@@ -359,8 +381,8 @@ export function createApp(options?: { loginMaxAttempts?: number; useLiveAI?: boo
       passwordHash: hashPassword(data.password),
     };
 
-    users.push(newUser);
-    await storage.saveAll('users', users);
+    if (newUser.regionId && !(await storage.getAll('regions')).some(r=>r.id===newUser.regionId)) return res.status(400).json({error:'Regional inválida'});
+    await storage.writeUser(newUser,true);
     await storage.logAudit(
       admin.id,
       admin.name,
@@ -373,7 +395,7 @@ export function createApp(options?: { loginMaxAttempts?: number; useLiveAI?: boo
     res.status(201).json(sanitizeUser(newUser));
   });
 
-  app.put('/api/users/:id', requireAuth, requireAdmin, async (req: AuthenticatedRequest, res: Response) => {
+  app.put('/api/users/:id', requireAuth, requireOwner, async (req: AuthenticatedRequest, res: Response) => {
     const admin = req.user!;
     const data = parseBody(updateUserSchema, req.body, res);
     if (!data) return;
@@ -406,8 +428,9 @@ export function createApp(options?: { loginMaxAttempts?: number; useLiveAI?: boo
       id: existing.id,
     };
 
-    users[index] = updated;
-    await storage.saveAll('users', users);
+    if (updated.email === ownerAccount()?.email || users.some(u=>u.id!==id && u.email.toLowerCase()===updated.email)) return res.status(409).json({error:'E-mail já cadastrado'});
+    if ((!updated.regionId && ['regional_coordinator','evangelism_leader','consolidation_team'].includes(updatedRole)) || (updated.regionId && !(await storage.getAll('regions')).some(r=>r.id===updated.regionId))) return res.status(400).json({error:'Selecione uma regional válida'});
+    await storage.writeUser(updated,false);
     await storage.logAudit(
       admin.id,
       admin.name,
@@ -420,7 +443,7 @@ export function createApp(options?: { loginMaxAttempts?: number; useLiveAI?: boo
     res.json(sanitizeUser(updated));
   });
 
-  app.delete('/api/users/:id', requireAuth, requireAdmin, async (req: AuthenticatedRequest, res: Response) => {
+  app.delete('/api/users/:id', requireAuth, requireOwner, async (req: AuthenticatedRequest, res: Response) => {
     const admin = req.user!;
     const { id } = req.params;
     if (id === admin.id) {
@@ -433,15 +456,14 @@ export function createApp(options?: { loginMaxAttempts?: number; useLiveAI?: boo
       return res.status(404).json({ error: 'Usuário não encontrado' });
     }
 
-    users[index].active = false;
-    await storage.saveAll('users', users);
+    await storage.deleteById('users',String(id));
     await storage.logAudit(
       admin.id,
       admin.name,
-      'DEACTIVATE_USER',
+      'DELETE_USER',
       'users',
       id,
-      `Conta desativada: ${users[index].name}`,
+      `Conta excluída: ${users[index].name}`,
       users[index].regionId
     );
     res.json({ success: true, user: sanitizeUser(users[index]) });
@@ -1865,5 +1887,10 @@ export function createApp(options?: { loginMaxAttempts?: number; useLiveAI?: boo
     });
   });
 
+  app.use((err: Error, _req: Request, res: Response, next: NextFunction) => {
+    if(res.headersSent) return next(err);
+    console.error('[API]',err.name);
+    res.status(500).json({error:'A operação não pôde ser concluída. Confira a configuração do servidor.'});
+  });
   return app;
 }

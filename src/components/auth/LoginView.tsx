@@ -4,6 +4,7 @@ import { useAuth } from '../../context/AuthContext.tsx';
 import { BrandLogo } from '../common/BrandLogo.tsx';
 
 interface LoginViewProps {
+  ownerOnly?: boolean;
   onBackToPublic: () => void;
 }
 
@@ -14,7 +15,7 @@ const DEMO_ACCOUNTS = [
   { label: 'Consolidação SP (Sarah)', email: 'sarah.consol@semeadoresdefogo.org' },
 ];
 
-export const LoginView: React.FC<LoginViewProps> = ({ onBackToPublic }) => {
+export const LoginView: React.FC<LoginViewProps> = ({ onBackToPublic, ownerOnly }) => {
   const { login } = useAuth();
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
@@ -48,8 +49,8 @@ export const LoginView: React.FC<LoginViewProps> = ({ onBackToPublic }) => {
         <p>Estrutura, unidade e missão.</p>
       </div>
       <div className="leadership-login-content">
-        <h1>Portal da Liderança</h1>
-        <p>Acesse as ferramentas da sua regional ou da Direção Global.</p>
+        <h1>{ownerOnly?'Configuração administrativa':'Portal da Liderança'}</h1>
+        <p>{ownerOnly?'Entre com a conta do proprietário.':'Acesse as ferramentas da sua regional ou da Direção Global.'}</p>
 
         <form onSubmit={handleSubmit} className="space-y-5">
           {error && (
@@ -109,7 +110,7 @@ export const LoginView: React.FC<LoginViewProps> = ({ onBackToPublic }) => {
             <span>{submitting ? 'Verificando...' : 'Entrar no Portal'}</span>
           </button>
 
-          <div className="pt-3 border-t border-[#DCE5ED]">
+          {!ownerOnly && import.meta.env.DEV && <div className="pt-3 border-t border-[#DCE5ED]">
             <p className="text-[11px] font-bold text-[#586E84] mb-2">
               Contas de Teste (Ambiente Local):
             </p>
@@ -126,7 +127,7 @@ export const LoginView: React.FC<LoginViewProps> = ({ onBackToPublic }) => {
                 </button>
               ))}
             </div>
-          </div>
+          </div>}
 
           <button
             type="button"

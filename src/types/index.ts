@@ -7,6 +7,7 @@ export type RoleType =
   | 'media_team';
 
 export interface User {
+  authUserId?: string;
   id: string;
   name: string;
   email: string;

@@ -10,9 +10,12 @@ import { ReportsModule } from './components/admin/ReportsModule.tsx';
 import { LoginView } from './components/auth/LoginView.tsx';
 import { AIAnalysisModal } from './components/admin/AIAnalysisModal.tsx';
 
-type View = 'public' | 'admin';
+import { OwnerSettings } from './components/admin/OwnerSettings';
+
+type View = 'public' | 'admin' | 'owner';
 
 function viewFromUrl(): View {
+  if (/^\/(?:admin\/config|config-admin)\/?$/.test(window.location.pathname)) return 'owner';
   return /^\/admin\/?$/.test(window.location.pathname) ? 'admin' : 'public';
 }
 
@@ -71,9 +74,11 @@ function MainApp() {
 
   if (!currentUser) {
     return (
-      <LoginView onBackToPublic={() => navigateTo('public')} />
+      <LoginView ownerOnly={currentView==='owner'} onBackToPublic={() => navigateTo('public')} />
     );
   }
+
+  if(currentView==='owner') return <OwnerSettings/>;
 
   const tabTitles: Record<string, { title: string; subtitle: string }> = {
     dashboard: {
