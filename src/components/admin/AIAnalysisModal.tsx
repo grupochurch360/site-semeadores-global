@@ -1,235 +1,133 @@
-import React, { useEffect, useState } from 'react';
-import {
-  Sparkles,
-  X,
-  RefreshCw,
-  Download,
-  ExternalLink,
-  AlertCircle,
-  FileCheck2,
-  Copy,
-  Check,
-} from 'lucide-react';
-import { api } from '../../services/api.ts';
+import { useEffect, useState } from 'react';
+import { api } from '../../services/api';
+import { downloadReport, reportSections } from './reportContent';
 
-interface AIAnalysisModalProps {
+export function AIAnalysisModal({
+  isOpen,
+  onClose,
+}: {
   isOpen: boolean;
   onClose: () => void;
-}
-
-export const AIAnalysisModal: React.FC<AIAnalysisModalProps> = ({ isOpen, onClose }) => {
-  const [loading, setLoading] = useState<boolean>(false);
-  const [analysisResult, setAnalysisResult] = useState<{
-    id: string;
-    provider: string;
-    html: string;
-    analysis: string;
-    analyzedReportsCount: number;
-    dataFingerprint: string;
-    timestamp: string;
-  } | null>(null);
-  const [targetPeriod, setTargetPeriod] = useState<string>('5º Bimestre');
-  const [copied, setCopied] = useState<boolean>(false);
-  const [errorMsg, setErrorMsg] = useState<string | null>(null);
-
-  const fetchLatestReport = async (period: string, isCancelled?: () => boolean) => {
-    try {
-      setLoading(true);
-      setErrorMsg(null);
-      const res = await api.analyzeReports(period);
-      if (!isCancelled?.()) {
-        setAnalysisResult(res);
-      }
-    } catch (err: any) {
-      if (!isCancelled?.()) {
-        setAnalysisResult(null);
-        setErrorMsg(err?.message || 'Erro ao gerar relatório oficial por IA');
-      }
-    } finally {
-      if (!isCancelled?.()) {
-        setLoading(false);
-      }
-    }
-  };
-
+}) {
+  const [period, setPeriod] = useState('5º Bimestre');
+  const [revision, refresh] = useState(0);
+  const [result, setResult] = useState<Awaited<
+    ReturnType<typeof api.analyzeReports>
+  > | null>(null);
+  const [error, setError] = useState('');
+  const [saving, setSaving] = useState(false);
   useEffect(() => {
     if (!isOpen) return;
-    let cancelled = false;
-    fetchLatestReport(targetPeriod, () => cancelled);
+    let active = true;
+    setResult(null);
+    setError('');
+    api
+      .analyzeReports(period)
+      .then((r) => {
+        if (active) setResult(r);
+      })
+      .catch((e) => {
+        if (active) setError(e.message);
+      });
     return () => {
-      cancelled = true;
+      active = false;
     };
-  }, [isOpen, targetPeriod]);
-
+  }, [isOpen, period, revision]);
   if (!isOpen) return null;
-
-  const handleGenerate = () => {
-    void fetchLatestReport(targetPeriod);
-  };
-
-  const handleOpenInNewTab = () => {
-    if (!analysisResult?.html) return;
-    const blob = new Blob([analysisResult.html], { type: 'text/html;charset=utf-8' });
-    const url = URL.createObjectURL(blob);
-    window.open(url, '_blank', 'noopener,noreferrer');
-  };
-
-  const handleDownloadHtml = () => {
-    if (!analysisResult?.html) return;
-    const blob = new Blob([analysisResult.html], { type: 'text/html;charset=utf-8' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    const slug = (targetPeriod || 'consolidado').toLowerCase().replace(/[^a-z0-9]+/g, '-');
-    a.href = url;
-    a.download = `relatorio-semeadores-${slug}.html`;
-    a.click();
-    URL.revokeObjectURL(url);
-  };
-
-  const handleCopy = () => {
-    if (analysisResult?.analysis) {
-      navigator.clipboard.writeText(analysisResult.analysis);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    }
-  };
-
   return (
-    <div className="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 z-50">
-      <div className="bg-white rounded-2xl max-w-5xl w-full p-6 shadow-2xl max-h-[94vh] flex flex-col gap-4 overflow-hidden">
-        <div className="flex items-center justify-between pb-3 border-b border-stone-200 shrink-0">
-          <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-[#061A2D] text-[#FFBD58] flex items-center justify-center">
-              <Sparkles className="w-4 h-4 text-[#FFBD58]" />
-            </div>
-            <div>
-              <h3 className="font-bold text-base text-[#0B2946]">
-                Relatório Oficial Consolidado por IA
-              </h3>
-              <p className="text-xs text-[#586E84]">
-                Modelo oficial Semeadores de Fogo — atualizado automaticamente com os dados mais recentes
-              </p>
-            </div>
-          </div>
+    <div className="fixed inset-0 z-50 grid place-items-center bg-black/60 sm:p-5">
+      <section
+        role="dialog"
+        aria-modal="true"
+        aria-label="Diagnóstico consolidado"
+        className="flex h-dvh w-full max-w-3xl flex-col bg-white sm:h-[90dvh] sm:rounded-xl overflow-hidden"
+      >
+        <header className="flex items-center justify-between border-b border-slate-200 p-4">
+          <h2 className="text-xl font-bold">Diagnóstico consolidado</h2>
           <button
+            aria-label="Fechar diagnóstico"
             onClick={onClose}
-            className="p-1 rounded-md text-stone-400 hover:text-stone-700 cursor-pointer"
+            className="p-3"
           >
-            <X className="w-5 h-5" />
+            ✕
           </button>
-        </div>
-
-        {/* Notice of Strict Ministerial Integrity */}
-        <div className="p-3 rounded-lg bg-stone-100 border border-stone-200 text-xs text-stone-700 flex items-start gap-2.5 shrink-0">
-          <AlertCircle className="w-4 h-4 text-stone-500 shrink-0 mt-0.5" />
-          <p className="leading-relaxed">
-            <strong>Regra Oficial:</strong> Todo relatório gerado segue o layout padrão A4 da plataforma (independentemente do modelo Gemini utilizado) e é sempre atualizado a partir dos dados reais mais recentes no banco.
-          </p>
-        </div>
-
-        {/* Parameters Toolbar */}
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 p-3 bg-stone-50 rounded-xl border border-stone-200 shrink-0">
-          <div className="flex items-center gap-2 w-full sm:w-auto">
-            <span className="text-xs font-bold text-stone-700">Período de Análise:</span>
-            <select
-              value={targetPeriod}
-              onChange={(e) => setTargetPeriod(e.target.value)}
-              className="px-2.5 py-1.5 text-xs bg-white border border-stone-200 rounded-md font-semibold text-stone-800 focus:outline-hidden"
+        </header>
+        <div className="min-h-0 flex-1 overflow-y-auto px-4 py-5 sm:px-8">
+          <div className="flex flex-wrap items-end gap-3">
+            <label className="flex-1 text-sm">
+              Período
+              <select
+                className="mt-1 block w-full rounded border p-2"
+                value={period}
+                onChange={(e) => setPeriod(e.target.value)}
+              >
+                <option value="">Todos os bimestres</option>
+                {[6, 5, 4, 3, 2, 1].map((n) => (
+                  <option key={n}>{n}º Bimestre</option>
+                ))}
+              </select>
+            </label>
+            <button
+              className="rounded border px-4 py-2"
+              onClick={() => refresh((n) => n + 1)}
             >
-              <option value="6º Bimestre">6º Bimestre (Nov/Dez 2026)</option>
-              <option value="5º Bimestre">5º Bimestre (Set/Out 2026)</option>
-              <option value="4º Bimestre">4º Bimestre (Jul/Ago 2026)</option>
-              <option value="3º Bimestre">3º Bimestre (Mai/Jun 2026)</option>
-              <option value="2º Bimestre">2º Bimestre (Mar/Abr 2026)</option>
-              <option value="1º Bimestre">1º Bimestre (Jan/Fev 2026)</option>
-              <option value="">Todos os Bimestres Cadastrados</option>
-            </select>
+              Atualizar
+            </button>
           </div>
-
-          <button
-            onClick={handleGenerate}
-            disabled={loading}
-            className="w-full sm:w-auto px-5 py-2 bg-[#061A2D] hover:bg-[#0A3D69] disabled:opacity-50 text-white rounded-lg text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 shadow-xs cursor-pointer"
-          >
-            {loading ? (
-              <>
-                <RefreshCw className="w-4 h-4 animate-spin text-[#FFBD58]" />
-                <span>Gerando Relatório Atualizado...</span>
-              </>
-            ) : (
-              <>
-                <Sparkles className="w-4 h-4 text-[#FFBD58]" />
-                <span>{analysisResult ? 'Atualizar Relatório com Novos Dados' : 'Gerar Relatório Oficial'}</span>
-              </>
-            )}
-          </button>
+          {error && (
+            <p role="alert" className="my-3 text-red-800">
+              {error}
+            </p>
+          )}
+          {!result && !error && (
+            <p role="status" className="my-5">
+              Gerando diagnóstico…
+            </p>
+          )}
+          {result && (
+            <>
+              <p className="my-4 text-sm text-slate-600">
+                {result.analyzedReportsCount} relatório(s) · {result.provider}
+              </p>
+              {reportSections(result.reportData).map((s, i) => (
+                <section key={i} className="mb-5">
+                  <h3 className="border-b border-slate-300 pb-2 text-lg font-bold">
+                    {s.title}
+                  </h3>
+                  {s.rows.map(([label, text], j) => (
+                    <div key={j} className="mt-3 break-words">
+                      <h4 className="text-sm font-semibold">{label}</h4>
+                      <p className="whitespace-pre-line text-sm leading-relaxed">
+                        {text}
+                      </p>
+                    </div>
+                  ))}
+                </section>
+              ))}
+            </>
+          )}
         </div>
-
-        {/* Error Banner */}
-        {errorMsg && (
-          <div className="p-3 rounded-lg bg-red-50 border border-red-200 text-xs text-red-800 flex items-start gap-2 shrink-0">
-            <AlertCircle className="w-4 h-4 text-red-600 shrink-0 mt-0.5" />
-            <span>{errorMsg}</span>
-          </div>
+        {result && (
+          <footer className="border-t p-3 pb-[max(.75rem,env(safe-area-inset-bottom))]">
+            <button
+              disabled={saving}
+              onClick={async () => {
+                setSaving(true);
+                try {
+                  await downloadReport(result.reportData);
+                } catch {
+                  setError('Falha ao baixar o PDF. Tente novamente.');
+                } finally {
+                  setSaving(false);
+                }
+              }}
+              className="w-full rounded-lg bg-[#071b2b] py-3 font-bold text-white"
+            >
+              {saving ? 'Preparando PDF…' : 'Baixar PDF'}
+            </button>
+          </footer>
         )}
-
-        {/* Results Area */}
-        {analysisResult ? (
-          <div className="flex-1 flex flex-col gap-3 min-h-0">
-            <div className="flex flex-wrap items-center justify-between gap-2 px-1 shrink-0">
-              <div className="flex items-center gap-2 text-xs text-stone-600">
-                <FileCheck2 className="w-4 h-4 text-emerald-700" />
-                <span>
-                  Modelo: <strong>{analysisResult.provider}</strong> • {analysisResult.analyzedReportsCount} relatórios • Base{' '}
-                  <code className="bg-stone-100 px-1 rounded text-[10px]">{analysisResult.dataFingerprint}</code>
-                </span>
-              </div>
-
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={handleOpenInNewTab}
-                  className="px-3 py-1.5 bg-stone-900 hover:bg-stone-800 text-white rounded-lg text-xs font-bold flex items-center gap-1.5 cursor-pointer"
-                >
-                  <ExternalLink className="w-3.5 h-3.5" />
-                  <span>Abrir / Salvar PDF</span>
-                </button>
-                <button
-                  onClick={handleDownloadHtml}
-                  className="px-3 py-1.5 bg-stone-100 hover:bg-stone-200 text-stone-800 rounded-lg text-xs font-bold flex items-center gap-1.5 cursor-pointer"
-                >
-                  <Download className="w-3.5 h-3.5" />
-                  <span>Baixar HTML</span>
-                </button>
-                <button
-                  onClick={handleCopy}
-                  className="px-3 py-1.5 bg-stone-100 hover:bg-stone-200 text-stone-700 rounded-lg text-xs font-semibold flex items-center gap-1.5 cursor-pointer"
-                >
-                  {copied ? <Check className="w-3.5 h-3.5 text-emerald-700" /> : <Copy className="w-3.5 h-3.5" />}
-                  <span>{copied ? 'Copiado' : 'Copiar Texto'}</span>
-                </button>
-              </div>
-            </div>
-
-            <div className="flex-1 min-h-[420px] border border-stone-200 rounded-xl overflow-hidden bg-stone-100">
-              <iframe
-                key={`${analysisResult.id}-${analysisResult.dataFingerprint}`}
-                title="Prévia do Relatório Oficial Semeadores de Fogo"
-                srcDoc={analysisResult.html}
-                className="w-full h-full min-h-[420px] bg-white"
-              />
-            </div>
-          </div>
-        ) : (
-          <div className="py-14 text-center text-stone-500 text-xs space-y-2">
-            <p className="font-semibold text-stone-700">
-              Clique em "Gerar Relatório Oficial" para montar o documento A4 atualizado.
-            </p>
-            <p>
-              Sempre que novos relatórios regionais forem enviados ou editados, basta clicar novamente para atualizar o documento com os novos dados.
-            </p>
-          </div>
-        )}
-      </div>
+      </section>
     </div>
   );
-};
+}
