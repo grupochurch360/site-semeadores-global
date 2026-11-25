@@ -1,4 +1,7 @@
-import { useEffect, useState, type FormEvent } from 'react';
+import { useEffect, useRef, useState, type FormEvent } from 'react';
+import { ArrowDown, ArrowUpRight, LogOut, Pencil, Plus, Search, Trash2 } from 'lucide-react';
+import { BrandLogo } from '../common/BrandLogo';
+import './owner-settings.css';
 import { api } from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
 import type { User, RoleType, Region } from '../../types';
@@ -13,14 +16,15 @@ const roles: Record<RoleType, string> = {
 };
 export function OwnerSettings() {
   const { currentUser, logout } = useAuth();
-  const [search,setSearch]=useState('');
+  const editorTitle = useRef<HTMLHeadingElement>(null);
+  const [search, setSearch] = useState('');
   const [users, setUsers] = useState<User[]>([]);
   const [regions, setRegions] = useState<Region[]>([]);
   const [editing, setEditing] = useState<User | null>(null);
   const [role, setRole] = useState<RoleType>('regional_coordinator');
   const [version, setVersion] = useState(0);
   const [busy, setBusy] = useState(false);
-  const [message, setMessage] = useState('');
+  const [notice, setNotice] = useState<{ text: string; error?: boolean } | null>(null);
   const [ready, setReady] = useState(false);
   useEffect(() => {
     let active = true;
@@ -34,7 +38,7 @@ export function OwnerSettings() {
           }
         })
         .catch((e) => {
-          if (active) setMessage(e.message);
+          if (active) setNotice({ text: e.message, error: true });
         });
     return () => {
       active = false;
@@ -58,7 +62,7 @@ export function OwnerSettings() {
       active: fields.get('active') === 'on',
     };
     setBusy(true);
-    setMessage('');
+    setNotice(null);
     try {
       const saved = editing
         ? await api.updateUser(editing.id, {
@@ -72,9 +76,9 @@ export function OwnerSettings() {
           : [...list, saved],
       );
       edit(null);
-      setMessage('Conta salva.');
+      setNotice({ text: 'Conta salva.' });
     } catch (e) {
-      setMessage((e as Error).message);
+      setNotice({ text: (e as Error).message, error: true });
     } finally {
       setBusy(false);
     }
@@ -96,174 +100,156 @@ export function OwnerSettings() {
       await api.deleteUser(user.id);
       setUsers((list) => list.filter((u) => u.id !== user.id));
       if (editing?.id === user.id) edit(null);
-      setMessage('Conta excluída.');
+      setNotice({ text: 'Conta excluída.' });
     } catch (e) {
-      setMessage((e as Error).message);
+      setNotice({ text: (e as Error).message, error: true });
     } finally {
       setBusy(false);
     }
   }
+
+  function openEditor(user: User | null) {
+    edit(user);
+    editorTitle.current?.focus({ preventScroll: true });
+    editorTitle.current?.scrollIntoView({ block: 'nearest' });
+  }
+
+  const isOwner = currentUser?.id === 'platform-owner';
+  const activeCount = users.filter(user => user.active !== false).length;
+  const query = search.trim().toLocaleLowerCase();
+  const visibleUsers = users.filter(user =>
+    [user.name, user.email, roles[user.role]].join(' ').toLocaleLowerCase().includes(query),
+  );
+  const regionNames = new Map(regions.map(region => [region.id, region.name]));
+
   return (
-    <main className="mx-auto min-h-dvh max-w-5xl bg-slate-50 p-4 sm:p-8 text-slate-900">
-      <header className="mb-4 flex flex-wrap items-center justify-between gap-3 rounded-2xl border-l-4 border-amber-400 bg-[#071923] p-6 text-white">
-        <h1 className="text-2xl font-bold sm:text-3xl">Gestão de usuários</h1>
-        <button
-          onClick={() => void logout()}
-          className="rounded border px-4 py-2"
-        >
-          Sair
-        </button>
+    <main className="owner-settings">
+      <header className="owner-topbar">
+        <div className="owner-width owner-topbar-inner">
+          <BrandLogo variant="white" size="sm" showSubtitle={false} />
+          <nav className="owner-topbar-actions" aria-label="Navegação da configuração">
+            {isOwner && <a href="/" aria-label="Portal da Liderança"><span className="owner-portal-label">Portal da Liderança</span><span className="owner-portal-short" aria-hidden="true">Portal</span><ArrowUpRight size={15} aria-hidden="true" /></a>}
+            <button type="button" onClick={() => void logout()}><LogOut size={16} aria-hidden="true" /> Sair</button>
+          </nav>
+        </div>
       </header>
-      {currentUser?.id !== 'platform-owner' ? (
-        <p>
-          Acesso exclusivo do proprietário. Saia para entrar com a conta
-          autorizada.
-        </p>
-      ) : (
-        <>
-          <a href="/" className="underline">
-            Abrir painel administrativo
-          </a>
-          <p role="status" className="my-3">
-            {message}
-          </p>
+
+      <section className="owner-hero" aria-labelledby="owner-title">
+        <div className="owner-width owner-hero-inner">
+          <div className="owner-hero-copy">
+            <h1 id="owner-title">Gestão de usuários</h1>
+            <p>Cadastre pessoas, atribua perfis e gerencie o acesso ao portal.</p>
+            {ready && (
+              <button type="button" className="owner-primary" disabled={busy} onClick={() => openEditor(null)}>
+                <Plus size={18} aria-hidden="true" /> Nova conta <ArrowDown className="owner-cta-arrow" size={15} aria-hidden="true" />
+              </button>
+            )}
+          </div>
+        </div>
+      </section>
+
+      {isOwner ? (
+        <div className="owner-width owner-body">
+          {!ready && <p className="owner-load" role={notice?.error ? 'alert' : 'status'}>{notice?.text ?? 'Carregando contas…'}</p>}
+
           {ready && (
             <>
-              <form
-                key={version}
-                onSubmit={save}
-                className="grid gap-4 rounded-xl border border-slate-200 bg-white p-5 shadow-sm sm:grid-cols-2 [&_input:not([type=checkbox])]:w-full [&_input]:rounded [&_input]:border [&_input]:p-2 [&_select]:w-full [&_select]:rounded [&_select]:border [&_select]:p-2"
-              >
-                <h2 className="text-lg font-bold sm:col-span-2">
-                  {editing ? 'Editar conta' : 'Nova conta'}
-                </h2>
-                <label>
-                  Nome
-                  <input
-                    name="name"
-                    required
-                    minLength={2}
-                    defaultValue={editing?.name}
-                  />
-                </label>
-                <label>
-                  E-mail
-                  <input
-                    name="email"
-                    type="email"
-                    required
-                    defaultValue={editing?.email}
-                  />
-                </label>
-                <label>
-                  Perfil
-                  <select
-                    value={role}
-                    onChange={(e) => setRole(e.target.value as RoleType)}
-                  >
-                    {Object.entries(roles).map(([k, v]) => (
-                      <option key={k} value={k}>
-                        {v}
-                      </option>
-                    ))}
-                  </select>
-                </label>
-                <label>
-                  Regional
-                  <select
-                    name="region"
-                    disabled={role === 'global_admin'}
-                    required={[
-                      'regional_coordinator',
-                      'evangelism_leader',
-                      'consolidation_team',
-                    ].includes(role)}
-                    defaultValue={editing?.regionId ?? ''}
-                  >
-                    <option value="">Sem regional</option>
-                    {regions.map((r) => (
-                      <option key={r.id} value={r.id}>
-                        {r.name}
-                      </option>
-                    ))}
-                  </select>
-                </label>
-                <label>
-                  {editing ? 'Nova senha (opcional)' : 'Senha inicial'}
-                  <input
-                    name="password"
-                    type="password"
-                    autoComplete="new-password"
-                    required={!editing}
-                    minLength={8}
-                  />
-                </label>
-                {editing && (
-                  <label>
-                    <input
-                      type="checkbox"
-                      name="active"
-                      defaultChecked={editing.active !== false}
-                    />{' '}
-                    Conta ativa
-                  </label>
-                )}
-                <div className="flex gap-4 sm:col-span-2">
-                  <button
-                    disabled={busy}
-                    className="rounded bg-slate-900 px-5 py-2 text-white"
-                  >
-                    Salvar conta
-                  </button>
-                  {editing && (
-                    <button type="button" onClick={() => edit(null)}>
-                      Cancelar
-                    </button>
+              <dl className="owner-summary" aria-label="Resumo de contas">
+                <div><dt>Contas cadastradas</dt><dd>{users.length}</dd></div>
+                <div><dt>Ativas</dt><dd>{activeCount}</dd></div>
+                <div><dt>Inativas</dt><dd>{users.length - activeCount}</dd></div>
+              </dl>
+
+              <div className="owner-workspace">
+                <section className="owner-directory" aria-labelledby="owner-directory-title">
+                  <div className="owner-directory-head">
+                    <h2 id="owner-directory-title">Contas</h2>
+                    <label className="owner-search">
+                      <span className="sr-only">Buscar usuário</span>
+                      <Search size={18} aria-hidden="true" />
+                      <input type="search" value={search} onChange={event => setSearch(event.target.value)} placeholder="Nome, e-mail ou perfil" />
+                    </label>
+                  </div>
+
+                  {visibleUsers.length === 0 ? (
+                    <p className="owner-empty" role="status">{query ? 'Nenhuma conta corresponde à busca.' : 'Nenhuma conta cadastrada.'}</p>
+                  ) : (
+                    <ul className="owner-list">
+                      {visibleUsers.map(user => {
+                        const initials = user.name.trim().split(/\s+/).slice(0, 2).map(word => word[0]).join('').toLocaleUpperCase();
+                        const region = user.regionId ? regionNames.get(user.regionId) : undefined;
+                        const active = user.active !== false;
+                        return (
+                          <li className="owner-row" key={user.id} data-editing={editing?.id === user.id}>
+                            <div className="owner-identity">
+                              <span className="owner-initials" aria-hidden="true">{initials}</span>
+                              <div>
+                                <strong>{user.name}</strong>
+                                <span className="owner-email">{user.email}</span>
+                              </div>
+                            </div>
+                            <div className="owner-access">
+                              <span>{roles[user.role]}</span>
+                              {region && <span className="owner-region">{region}</span>}
+                              <span className="owner-status" data-active={active}>{active ? 'Ativa' : 'Inativa'}</span>
+                            </div>
+                            <div className="owner-row-actions">
+                              <button type="button" aria-label={'Editar ' + user.name} disabled={busy} onClick={() => openEditor(user)}>
+                                <Pencil size={15} aria-hidden="true" /> Editar
+                              </button>
+                              <button type="button" className="owner-delete" aria-label={'Excluir ' + user.name} disabled={busy} onClick={() => void remove(user)}>
+                                <Trash2 size={15} aria-hidden="true" /> Excluir
+                              </button>
+                            </div>
+                          </li>
+                        );
+                      })}
+                    </ul>
                   )}
-                </div>
-              </form>
-              <h2 className="mt-8 text-lg font-bold">
-                Usuários ({users.length})
-              </h2>
-              <label className="mt-4 block text-sm font-semibold">Buscar usuário
-                <input type="search" value={search} onChange={e=>setSearch(e.target.value)} placeholder="Nome, e-mail ou perfil" className="mt-1 mb-3 block w-full rounded-lg border border-slate-300 bg-white px-4 py-3" />
-              </label>
-              {users.filter(u=>[u.name,u.email,roles[u.role]].join(' ').toLocaleLowerCase().includes(search.trim().toLocaleLowerCase())).map((u) => (
-                <article
-                  key={u.id}
-                  className="mb-2 flex flex-wrap items-center justify-between gap-3 rounded-lg border border-slate-200 bg-white px-4 py-3"
-                >
-                  <div className="min-w-0 break-words">
-                    <strong>{u.name}</strong>
-                    <p>{u.email}</p>
-                    <small>
-                      {roles[u.role]} ·{' '}
-                      {u.active === false ? 'Inativa' : 'Ativa'}
-                    </small>
+                </section>
+
+                <section className="owner-editor" aria-labelledby="owner-editor-title">
+                  <div className="owner-editor-head">
+                    <h2 id="owner-editor-title" tabIndex={-1} ref={editorTitle}>{editing ? 'Editar conta' : 'Nova conta'}</h2>
+                    {editing && <span>{editing.name}</span>}
                   </div>
-                  <div className="flex gap-4">
-                    <button
-                      disabled={busy}
-                      onClick={() => {
-                        edit(u);
-                        window.scrollTo(0, 0);
-                      }}
-                    >
-                      Editar
-                    </button>
-                    <button
-                      disabled={busy}
-                      className="text-red-800"
-                      onClick={() => void remove(u)}
-                    >
-                      Excluir
-                    </button>
-                  </div>
-                </article>
-              ))}
+
+                  <form key={version} className="owner-form" onSubmit={save}>
+                    <label>Nome<input name="name" required minLength={2} defaultValue={editing?.name} /></label>
+                    <label>E-mail<input name="email" type="email" required defaultValue={editing?.email} /></label>
+                    <div className="owner-form-grid">
+                      <label>
+                        <span id="owner-role-label">Perfil</span>
+                        <select aria-labelledby="owner-role-label" value={role} onChange={event => setRole(event.target.value as RoleType)}>
+                          {Object.entries(roles).map(([value, label]) => <option key={value} value={value}>{label}</option>)}
+                        </select>
+                      </label>
+                      <label>
+                        <span id="owner-region-label">Regional</span>
+                        <select aria-labelledby="owner-region-label" name="region" disabled={role === 'global_admin'} required={['regional_coordinator', 'evangelism_leader', 'consolidation_team'].includes(role)} defaultValue={editing?.regionId ?? ''}>
+                          <option value="">Sem regional</option>
+                          {regions.map(region => <option key={region.id} value={region.id}>{region.name}</option>)}
+                        </select>
+                      </label>
+                    </div>
+                    <label>
+                      {editing ? 'Nova senha (opcional)' : 'Senha inicial'}
+                      <input name="password" type="password" autoComplete="new-password" required={!editing} minLength={8} />
+                    </label>
+                    {editing && <label className="owner-active"><input type="checkbox" name="active" defaultChecked={editing.active !== false} /> Conta ativa</label>}
+                    <div className="owner-form-actions">
+                      <button type="submit" className="owner-primary" disabled={busy}>{busy ? 'Salvando…' : editing ? 'Salvar alterações' : 'Criar conta'}</button>
+                      {editing && <button type="button" disabled={busy} onClick={() => edit(null)}>Cancelar</button>}
+                    </div>
+                  </form>
+                </section>
+              </div>
+              {notice && <p className="owner-feedback" data-error={Boolean(notice.error)} role={notice.error ? 'alert' : 'status'}>{notice.text}</p>}
             </>
           )}
-        </>
+        </div>
+      ) : (
+        <div className="owner-width owner-body"><p className="owner-load">Acesso exclusivo do proprietário. Saia para entrar com a conta autorizada.</p></div>
       )}
     </main>
   );
